@@ -35,6 +35,28 @@
 #include "n32l40x_it.h"
 #include "system.h"
 
+
+
+
+__WEAK void exti0_irqhandler_call(void){}
+__WEAK void exti1_irqhandler_call(void){}
+__WEAK void exti2_irqhandler_call(void){}
+__WEAK void exti3_irqhandler_call(void){}
+__WEAK void exti4_irqhandler_call(void){}
+__WEAK void exti5_irqhandler_call(void){}
+__WEAK void exti6_irqhandler_call(void){}
+__WEAK void exti7_irqhandler_call(void){}
+__WEAK void exti8_irqhandler_call(void){}
+__WEAK void exti9_irqhandler_call(void){}
+__WEAK void exti10_irqhandler_call(void){}
+__WEAK void exti11_irqhandler_call(void){}
+__WEAK void exti12_irqhandler_call(void){}
+__WEAK void exti13_irqhandler_call(void){}
+__WEAK void exti14_irqhandler_call(void){}
+__WEAK void exti15_irqhandler_call(void){}
+
+
+
 /** @addtogroup N32L40x_StdPeriph_Template
  * @{
  */
@@ -134,6 +156,55 @@ void TIM6_IRQHandler(void)
         system_tick_counter_ms += SYSTEM_TICK_PERIOD_MS;
     }
 }
+
+
+
+
+
+void EXTI0_IRQHandler(void)
+{
+	exti0_irqhandler_call();
+}
+
+void EXTI1_IRQHandler(void)
+{
+	exti1_irqhandler_call();
+}
+
+void EXTI2_IRQHandler(void)
+{
+	exti2_irqhandler_call();
+}
+
+void EXTI3_IRQHandler(void)
+{
+	exti3_irqhandler_call();
+}
+
+void EXTI4_IRQHandler(void)
+{
+	exti4_irqhandler_call();
+}
+
+void EXTI9_5_IRQHandler(void)
+{
+	exti5_irqhandler_call();
+	exti6_irqhandler_call();
+	exti7_irqhandler_call();
+	exti8_irqhandler_call();
+	exti9_irqhandler_call();
+}
+
+void EXTI15_10_IRQHandler(void)
+{
+	exti10_irqhandler_call();
+	exti11_irqhandler_call();
+	exti12_irqhandler_call();
+	exti13_irqhandler_call();
+	exti14_irqhandler_call();
+	exti15_irqhandler_call();
+}
+
 
 /**
  * @}
