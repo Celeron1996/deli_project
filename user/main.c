@@ -5,6 +5,7 @@
 #include "aht20.h"
 #include "lcd.h"
 #include "delay.h"
+#include "system.h"
 
 void printf_init(void);
 
@@ -19,12 +20,14 @@ int main(void)
 	
 	//aht20_test();
 	
+	system_tick_init();
+
 	lcd_init();
 	
 		uint8_t min = 0;
 		uint8_t hour = 0;
-		
-
+		uint32_t delay = 0;
+	
 		lcd_time_display(12, 0);
 		lcd_colon_config(1);
 		lcd_date_display(4, 21);
@@ -37,15 +40,18 @@ int main(void)
 		
 		while (1)
 		{
-			lcd_time_display(hour, min);
-			delay_ms(1000);
-			if (min++ >= 60)
+			if ((system_get_tick_cnt_ms() - delay) >= 1000)
 			{
-				if (hour++ >= 24)
+				delay = system_get_tick_cnt_ms();
+				lcd_time_display(hour, min);
+				if (min++ >= 60)
 				{
-					hour = 0;
+					if (hour++ >= 24)
+					{
+						hour = 0;
+					}
+					min = 0;
 				}
-				min = 0;
 			}
 		}
 	
