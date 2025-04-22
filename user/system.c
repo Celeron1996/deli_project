@@ -2,7 +2,7 @@
 
 
 /* 单位是毫秒 */
-volatile uint32_t system_tick_counter_ms = 0;
+volatile tick_type system_tick_counter_ms = 0;
 
 
 

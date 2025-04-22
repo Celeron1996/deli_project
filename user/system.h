@@ -5,11 +5,13 @@
 #include "stdint.h"
 
 
+#define tick_type	uint64_t
+
 #define SYSTEM_TICK_PERIOD_MS			(5U)
 
 #define system_get_tick_cnt_ms()				system_tick_counter_ms
 
-extern volatile uint32_t system_tick_counter_ms;
+extern volatile tick_type system_tick_counter_ms;
 
 
 
