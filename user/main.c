@@ -4,6 +4,7 @@
 
 #include "aht20.h"
 #include "lcd.h"
+#include "delay.h"
 
 void printf_init(void);
 
@@ -20,22 +21,32 @@ int main(void)
 	
 	lcd_init();
 	
-		uint8_t counter = 0;
-		uint8_t i = 1;
+		uint8_t min = 0;
+		uint8_t hour = 0;
+		
 
 		lcd_time_display(12, 0);
 		lcd_colon_config(1);
 		lcd_date_display(4, 21);
 		lcd_week_display(1);
 		lcd_temper_humid_display(28, 75);
-		lcd_HCHO_display(1234);
+		lcd_HCHO_display(234);
 		lcd_battery_config(1);
 		lcd_bluetooth_config(1);
 		
 		
 		while (1)
 		{
-
+			lcd_time_display(hour, min);
+			delay_ms(1000);
+			if (min++ >= 60)
+			{
+				if (hour++ >= 24)
+				{
+					hour = 0;
+				}
+				min = 0;
+			}
 		}
 	
 	return 0;
