@@ -3,7 +3,7 @@
 #include "n32l40x.h"
 
 #include "aht20.h"
-
+#include "lcd.h"
 
 void printf_init(void);
 
@@ -11,14 +11,32 @@ void printf_init(void);
 
 int main(void)
 {
-	printf_init();
+	//printf_init();
 
-	printf("\n\r init printf! \n\r");
+	//printf("\n\r init printf! \n\r");
 	
 	
-	aht20_test();
+	//aht20_test();
 	
-	while(1);
+	lcd_init();
+	
+		uint8_t counter = 0;
+		uint8_t i = 1;
+
+		lcd_time_display(12, 0);
+		lcd_colon_config(1);
+		lcd_date_display(4, 21);
+		lcd_week_display(1);
+		lcd_temper_humid_display(28, 75);
+		lcd_HCHO_display(1234);
+		lcd_battery_config(1);
+		lcd_bluetooth_config(1);
+		
+		
+		while (1)
+		{
+
+		}
 	
 	return 0;
 }
