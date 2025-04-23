@@ -12,5 +12,7 @@
 
 void aht20_init(void);
 void aht20_test(void);
+void aht20_process(void);
+
 
 #endif

@@ -76,7 +76,7 @@ void Delay(uint32_t nCount)
     uint32_t tcnt;
     while(nCount--)
     {
-        tcnt = 64000 / 5;
+        tcnt = 32000 / 5;
         while (tcnt--){;}
     }
 }
@@ -86,7 +86,7 @@ void Delay_us(uint32_t nCount)
     uint32_t tcnt;
     while (nCount--)
     {
-        tcnt = 64 / 5;
+        tcnt = 32 / 5;
         while (tcnt--){;}
     }
 }
@@ -99,13 +99,13 @@ int i2c_master_init(void)
     RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_AFIO, ENABLE);
     RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOB, ENABLE);
 
-    /*PB8 -- SCL; PB9 -- SDA*/
+    /*PB6 -- SCL; PB7 -- SDA*/
     GPIO_InitStruct(&i2c1_gpio);
-    i2c1_gpio.Pin               = GPIO_PIN_8 | GPIO_PIN_9;
+    i2c1_gpio.Pin               = GPIO_PIN_6 | GPIO_PIN_7;
     i2c1_gpio.GPIO_Slew_Rate    = GPIO_Slew_Rate_High;
     i2c1_gpio.GPIO_Mode         = GPIO_Mode_AF_OD;
-    i2c1_gpio.GPIO_Alternate    = GPIO_AF4_I2C1;
-    i2c1_gpio.GPIO_Pull         = GPIO_Pull_Up;	  
+    i2c1_gpio.GPIO_Alternate    = GPIO_AF1_I2C1;
+    i2c1_gpio.GPIO_Pull         = GPIO_No_Pull;	  
     GPIO_InitPeripheral(GPIOB, &i2c1_gpio);
 
     I2C_DeInit(I2C1);
