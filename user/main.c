@@ -12,6 +12,7 @@
 void printf_init(void);
 
 void time_set(void);
+void model_vcc_init(void);
 
 
 int main(void)
@@ -27,6 +28,11 @@ int main(void)
 
 	key_init();
 	lcd_init();
+
+	model_vcc_init();
+	aht20_init();
+
+	
 	
 		uint8_t min = 24;
 		uint8_t hour = 11;
@@ -49,8 +55,9 @@ int main(void)
 		{
 
 			time_set();
-
-			/*
+			aht20_process();
+			
+			/* 
 			if (key_get_event(&key_id, &key_event))
 			{
 				switch (key_id)
@@ -168,9 +175,8 @@ void printf_init(void)
 /* retarget the C library printf function to the USART */
 int fputc(int ch, FILE* f)
 {
-    USART_SendData(USARTx, (uint8_t)ch);
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXDE) == RESET)
-        ;
+    //USART_SendData(USARTx, (uint8_t)ch);
+   // while (USART_GetFlagStatus(USARTx, USART_FLAG_TXDE) == RESET);
 
     return (ch);
 }
@@ -432,4 +438,20 @@ void time_set(void)
 
 
 
+
+void model_vcc_init(void)
+{
+	GPIO_InitType gpio_init;
+
+
+	RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, ENABLE);
+
+	GPIO_InitStruct(&gpio_init);
+	gpio_init.Pin			= GPIO_PIN_12;
+	gpio_init.GPIO_Pull		= GPIO_No_Pull;
+	gpio_init.GPIO_Mode		= GPIO_Mode_Out_PP;
+	GPIO_InitPeripheral(GPIOA, &gpio_init);
+
+	GPIO_WriteBit(GPIOA, GPIO_PIN_12, Bit_RESET);
+}
 
