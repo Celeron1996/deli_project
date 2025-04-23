@@ -1,11 +1,18 @@
 #include "key.h"
 
+static void key_gpio_init(void);
+static void key_event_call(key_id_def id, key_event_def event);
 
 static volatile uint8_t key_int_flag = 0;
 
 static struct key_str key_handler[KEY_MAX_NUM];
 
-static void button_gpio_init(void)
+static key_event_def key_event_buf;
+static key_id_def key_event_id;
+static uint8_t key_event_refresh = 0;
+
+/* key gpio config */
+static void key_gpio_init(void)
 {
 	GPIO_InitType gpio_init;
 	EXTI_InitType exti_init;
@@ -59,9 +66,14 @@ static void button_gpio_init(void)
 	nvic_init.NVIC_IRQChannelSubPriority        = 0x0F;
 	nvic_init.NVIC_IRQChannelCmd                = ENABLE;
 	NVIC_Init(&nvic_init);
+}
 
+/* key init */
+void key_init(void)
+{
+	key_gpio_init();
 
-
+	
 	/* init key static RAM */
 	for (uint8_t i = 0; i < KEY_MAX_NUM; i++)
 	{
@@ -69,36 +81,36 @@ static void button_gpio_init(void)
 		key_handler[i].sta_bits = 0xFF;
 		key_handler[i].hold_cnt = 0;
 	}
+	
 }
 
 
-void key_up_irq_call(void)
+static void key_up_irq_call(void)
 {
 	if(RESET != EXTI_GetITStatus(KEY_UP_EXIT_LINE))
 	{
 		EXTI_ClrITPendBit(KEY_UP_EXIT_LINE);
 
 		/* MY CODE BEGIN */
-		key_int_flag = KEY_MAX_NUM;
+		key_int_flag += KEY_MAX_NUM;
 	}
 }
 
 
-void key_down_set_irq_call(void)
+static void key_down_irq_call(void)
 {
 	if(RESET != EXTI_GetITStatus(KEY_DOWN_EXIT_LINE))
 	{
 		EXTI_ClrITPendBit(KEY_DOWN_EXIT_LINE);
 
 		/* MY CODE BEGIN */
-		key_int_flag = KEY_MAX_NUM;
+		key_int_flag += KEY_MAX_NUM;
 	}
 }
 
 
-
-
-void key_process(void)
+/* 按键扫描 */
+void key_scanner(void)
 {
 	static tick_type key_tick = 0;
 	uint8_t pin_state_key_up;
@@ -195,6 +207,28 @@ void key_process(void)
 }
 
 
+/* 按键事件回调 */
+static __INLINE void key_event_call(key_id_def id, key_event_def event)
+{
+	key_event_id = id;
+	key_event_buf = event;
+	key_event_refresh = 1;
+}
 
-__WEAK void key_event_call(key_id_def id, key_event_def event){}
+
+/* 获取按键事件 */
+uint8_t key_get_event(key_id_def *id, key_event_def *event)
+{
+	key_scanner();
+	
+	if (key_event_refresh)
+	{
+		*id = key_event_id;
+		*event = key_event_buf;
+		key_event_refresh = 0;
+		return 1;
+	}
+	
+	return 0;
+}
 

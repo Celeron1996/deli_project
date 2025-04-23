@@ -34,7 +34,7 @@
 /* key_up int : Configure the NVIC Preemption Priority Bits */
 #define KEY_DOWN_NVIC_IRQ_CHANNEL		EXTI15_10_IRQn
 /* key_up gpio exti call define */
-#define key_down_set_irq_call						exti14_irqhandler_call
+#define key_down_irq_call						exti14_irqhandler_call
 
 
 
@@ -76,7 +76,6 @@ struct key_str {
 };
 
 
-
-void key_event_call(key_id_def id, key_event_def event);
+uint8_t key_get_event(key_id_def *id, key_event_def *event);
 
 #endif
