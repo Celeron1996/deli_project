@@ -85,7 +85,7 @@ void key_init(void)
 }
 
 
-static void key_up_irq_call(void)
+void key_up_irq_call(void)
 {
 	if(RESET != EXTI_GetITStatus(KEY_UP_EXIT_LINE))
 	{
@@ -97,7 +97,7 @@ static void key_up_irq_call(void)
 }
 
 
-static void key_down_irq_call(void)
+void key_down_irq_call(void)
 {
 	if(RESET != EXTI_GetITStatus(KEY_DOWN_EXIT_LINE))
 	{
@@ -177,6 +177,7 @@ void key_scanner(void)
 						
 						if (key_int_flag){key_int_flag--;}
 					}
+					break;
 				}
 				case 0:
 				{
@@ -194,6 +195,7 @@ void key_scanner(void)
 							key_event_call(i, key_event_hold_3s);
 						}
 					}
+					break;
 				}
 				default:
 				{

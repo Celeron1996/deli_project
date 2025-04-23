@@ -66,7 +66,7 @@ typedef enum{
 
 
 /* sta_bits中确认按键触发的值，或者说消抖 */
-#define KEY_TRIGGER_MASK			(0x03)
+#define KEY_TRIGGER_MASK			(0x3F)
 
 /* 按键结构体 */
 struct key_str {
@@ -76,6 +76,7 @@ struct key_str {
 };
 
 
+void key_init(void);
 uint8_t key_get_event(key_id_def *id, key_event_def *event);
 
 #endif
