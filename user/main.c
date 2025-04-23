@@ -6,6 +6,8 @@
 #include "lcd.h"
 #include "delay.h"
 #include "system.h"
+#include "key.h"
+
 
 void printf_init(void);
 
@@ -22,11 +24,12 @@ int main(void)
 	
 	system_tick_init();
 
+	key_init();
 	lcd_init();
 	
-		uint8_t min = 0;
-		uint8_t hour = 0;
-		uint32_t delay = 0;
+		uint8_t min = 24;
+		uint8_t hour = 11;
+		tick_type delay = 0;
 	
 		lcd_time_display(12, 0);
 		lcd_colon_config(1);
@@ -36,23 +39,61 @@ int main(void)
 		lcd_HCHO_display(234);
 		lcd_battery_config(1);
 		lcd_bluetooth_config(1);
-		
+
+
+		key_id_def key_id;
+		key_event_def key_event;
 		
 		while (1)
 		{
+			if (key_get_event(&key_id, &key_event))
+			{
+				switch (key_id)
+				{
+					case key_up:
+						if (key_event == key_event_press){
+							hour++;
+						}
+						break;
+					case key_down:
+						if (key_event == key_event_press){
+							min++;
+						}
+						break;
+					case key_set:
+						if (key_event == key_event_hold_3s){
+							hour++;
+							min++;
+						}
+						break;
+					default:
+						break;
+				}
+				if (min >= 60){
+					min = 0;
+				}
+				if (hour >= 24){
+					hour = 0;
+				}
+				lcd_time_display(hour, min);
+			}
+			/*
 			if ((system_get_tick_cnt_ms() - delay) >= 1000)
 			{
 				delay = system_get_tick_cnt_ms();
 				lcd_time_display(hour, min);
-				if (min++ >= 60)
+				if (++min >= 60)
 				{
-					if (hour++ >= 24)
+					if (++hour >= 24)
 					{
 						hour = 0;
 					}
 					min = 0;
 				}
 			}
+			*/
+
+			
 		}
 	
 	return 0;
