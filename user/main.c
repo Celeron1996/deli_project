@@ -189,6 +189,8 @@ void time_set(void)
 		step_set_year_l,
 		step_set_mon,
 		step_set_day,
+		step_set_hour,
+		step_set_min,
 		step_set_final,
 	} step = step_init;
 	static tick_type flick_tick = 0;
@@ -196,6 +198,8 @@ void time_set(void)
 	static uint16_t year = 2025;
 	static uint8_t mon = 1;
 	static uint8_t day = 1;
+	static uint8_t hour = 12;
+	static uint8_t min = 12;
 	
 	key_id_def key_id;
 	key_event_def key_event;
@@ -227,7 +231,7 @@ void time_set(void)
 				else if ((key_id == key_set)&&(key_event == key_event_press))
 				{
 					lcd_time_display((uint8_t)(year/100), (uint8_t)(year%100));
-					flick_tick = system_get_tick_cnt_ms();
+					flick_tick = 0;
 					flick_flag = 1;
 					step = step_set_mon;
 					break;
@@ -268,7 +272,7 @@ void time_set(void)
 				else if ((key_id == key_set)&&(key_event == key_event_press))
 				{
 					lcd_date_display(mon, day);
-					flick_tick = system_get_tick_cnt_ms();
+					flick_tick = 0;
 					flick_flag = 1;
 					step = step_set_day;
 					break;
@@ -309,9 +313,11 @@ void time_set(void)
 				else if ((key_id == key_set)&&(key_event == key_event_press))
 				{
 					lcd_date_display(mon, day);
-					flick_tick = system_get_tick_cnt_ms();
+					flick_tick = 0;
 					flick_flag = 1;
-					step = step_set_final;
+					step = step_set_hour;
+					lcd_time_display(hour, min);
+					lcd_colon_config(1);
 					break;
 				}
 			}
@@ -333,9 +339,90 @@ void time_set(void)
 			}
 			break;
 		}
+		case step_set_hour:
+		{
+			if (key_get_event(&key_id, &key_event))
+			{
+				if ((key_id == key_up)&&(key_event == key_event_press))
+				{
+					if (hour < 23){hour++;}
+					lcd_time_display(hour, min);
+				}
+				else if ((key_id == key_down)&&(key_event == key_event_press))
+				{
+					if (hour > 1){hour--;}
+					lcd_time_display(hour, min);
+				}
+				else if ((key_id == key_set)&&(key_event == key_event_press))
+				{
+					lcd_time_display(hour, min);
+					flick_tick = 0;
+					flick_flag = 1;
+					step = step_set_min;
+					break;
+				}
+			}
+			else
+			{
+			}
+			if ((system_get_tick_cnt_ms() - flick_tick) >= 500)
+			{
+				if (flick_flag){
+					lcd_num_turnoff(1);
+					lcd_num_turnoff(2);
+					flick_flag = 0;
+				}
+				else{
+					lcd_time_display(hour, min);
+					flick_flag = 1;
+				}
+				flick_tick = system_get_tick_cnt_ms();
+			}
+			break;
+		}
+		case step_set_min:
+		{
+			if (key_get_event(&key_id, &key_event))
+			{
+				if ((key_id == key_up)&&(key_event == key_event_press))
+				{
+					if (min < 59){min++;}
+					lcd_time_display(hour, min);
+				}
+				else if ((key_id == key_down)&&(key_event == key_event_press))
+				{
+					if (min > 1){min--;}
+					lcd_time_display(hour, min);
+				}
+				else if ((key_id == key_set)&&(key_event == key_event_press))
+				{
+					lcd_time_display(hour, min);
+					flick_tick = 0;
+					flick_flag = 1;
+					step = step_set_final;
+					break;
+				}
+			}
+			else
+			{
+			}
+			if ((system_get_tick_cnt_ms() - flick_tick) >= 500)
+			{
+				if (flick_flag){
+					lcd_num_turnoff(3);
+					lcd_num_turnoff(4);
+					flick_flag = 0;
+				}
+				else{
+					lcd_time_display(hour, min);
+					flick_flag = 1;
+				}
+				flick_tick = system_get_tick_cnt_ms();
+			}
+			break;
+		}
 		case step_set_final:
 		{
-			
 			break;
 		}
 		default:break;
