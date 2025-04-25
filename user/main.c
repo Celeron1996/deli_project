@@ -7,7 +7,7 @@
 #include "delay.h"
 #include "system.h"
 #include "key.h"
-
+#include "rtc.h"
 
 void printf_init(void);
 
@@ -26,6 +26,7 @@ int main(void)
 	
 	system_tick_init();
 
+	RTC_config();
 	key_init();
 	lcd_init();
 
