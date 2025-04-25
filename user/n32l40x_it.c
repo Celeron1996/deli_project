@@ -207,5 +207,18 @@ void EXTI15_10_IRQHandler(void)
 
 
 /**
+ * @brief  This function handles RTC WakeUp interrupt request.
+ */
+void RTC_WKUP_IRQHandler(void)
+{
+    EXTI_ClrITPendBit(EXTI_LINE20);
+    if (RTC_GetITStatus(RTC_INT_WUT) != RESET)
+    {
+       RTC_ClrIntPendingBit(RTC_INT_WUT);
+    }
+}
+
+
+/**
  * @}
  */
