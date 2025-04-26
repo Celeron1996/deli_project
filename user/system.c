@@ -7,8 +7,10 @@ volatile tick_type system_tick_counter_ms = 0;
 
 
 /* 使用基本定时器6进行tick计数，需要产生5ms中断的tick
-	 APB1_PERIPH 过来给到定时器的频率等于CPU频率，目前 32MHZ
-	 预分频系数设为32，即1微秒记一次
+	 APB1_PERIPH 过来给到定时器的频率最大16MHZ
+	 根据数据手册，APB1 的分频系数不为1时，给到TIM6时频率是两倍
+	 即 TIM6 最大时钟频率是32MHZ
+	 综上：预分频系数设为32，即1微秒记一次
 	 然后 period周期值为 5000，所以为5ms中断一次
 */
 TIM_TimeBaseInitType TIM_TimeBaseStructure;
