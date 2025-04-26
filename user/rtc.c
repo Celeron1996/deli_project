@@ -37,6 +37,35 @@ void RTC_set_date_time(uint16_t year, uint8_t mon, uint8_t day, uint8_t hour, ui
 	}
 }
 
+/*
+#define IS_RTC_MONTH(MONTH) (((MONTH) >= 1) && ((MONTH) <= 12))
+#define IS_RTC_DATE(DATE)   (((DATE) >= 1) && ((DATE) <= 31))
+#define RTC_WEEKDAY_MONDAY    ((uint8_t)0x01)
+#define RTC_WEEKDAY_TUESDAY   ((uint8_t)0x02)
+#define RTC_WEEKDAY_WEDNESDAY ((uint8_t)0x03)
+#define RTC_WEEKDAY_THURSDAY  ((uint8_t)0x04)
+#define RTC_WEEKDAY_FRIDAY    ((uint8_t)0x05)
+#define RTC_WEEKDAY_SATURDAY  ((uint8_t)0x06)
+#define RTC_WEEKDAY_SUNDAY    ((uint8_t)0x07)
+*/
+void RTC_get_date_time(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *week, uint8_t *hour, uint8_t *min, uint8_t *sec)
+{
+	RTC_DateType RTC_DateStruct;
+	RTC_TimeType RTC_TimeStruct;
+
+	RTC_GetDate(RTC_FORMAT_BIN, &RTC_DateStruct);
+	RTC_GetTime(RTC_FORMAT_BIN, &RTC_TimeStruct);
+
+	*year = RTC_DateStruct.Year + 2000;
+	*mon = RTC_DateStruct.Month;
+	*day = RTC_DateStruct.Date;
+	*week = RTC_DateStruct.WeekDay;
+
+	*hour = RTC_TimeStruct.Hours;
+	*min = RTC_TimeStruct.Minutes;
+	*sec = RTC_TimeStruct.Seconds;
+}
+
 
 /**
  * @brief  RTC prescaler config.
