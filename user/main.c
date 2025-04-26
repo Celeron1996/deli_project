@@ -24,11 +24,15 @@ int main(void)
 	
 	//aht20_test();
 	
+	RTC_config();
+
 	system_tick_init();
 
-	RTC_config();
-	key_init();
 	lcd_init();
+
+	
+	key_init();
+	
 
 	model_vcc_init();
 	aht20_init();
