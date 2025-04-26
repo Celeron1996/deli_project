@@ -211,9 +211,26 @@ void time_set(void)
 	static uint8_t day = 1;
 	static uint8_t hour = 12;
 	static uint8_t min = 12;
-	
+	static uint8_t set_flag = 0;
 	key_id_def key_id;
 	key_event_def key_event;
+
+
+	if (!set_flag)
+	{
+		if (!key_get_event(&key_id, &key_event))
+		{
+			return ;
+		}
+
+		if (!((key_id == key_set) && (key_event == key_event_hold_3s)))
+		{
+			return ;
+		}
+
+		set_flag = 1;
+	}
+
 
 	switch (step)
 	{
@@ -222,6 +239,7 @@ void time_set(void)
 			lcd_colon_config(0);
 			lcd_time_display((uint8_t)(year/100), (uint8_t)(year%100));
 			lcd_date_display(mon, day);
+			lcd_week_display(RTC_get_weekday_math(year, mon, day));
 			step = step_set_year_l;
 			break;
 		}
@@ -247,6 +265,7 @@ void time_set(void)
 					step = step_set_mon;
 					break;
 				}
+				lcd_week_display(RTC_get_weekday_math(year, mon, day));
 			}
 			else
 			{
@@ -288,6 +307,7 @@ void time_set(void)
 					step = step_set_day;
 					break;
 				}
+				lcd_week_display(RTC_get_weekday_math(year, mon, day));
 			}
 			else
 			{
@@ -331,6 +351,7 @@ void time_set(void)
 					lcd_colon_config(1);
 					break;
 				}
+				lcd_week_display(RTC_get_weekday_math(year, mon, day));
 			}
 			else
 			{
@@ -434,6 +455,8 @@ void time_set(void)
 		}
 		case step_set_final:
 		{
+			RTC_set_date_time(year, mon, day, hour, min, 0);
+			set_flag = 0;
 			break;
 		}
 		default:break;
