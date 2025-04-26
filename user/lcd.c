@@ -479,6 +479,14 @@ void lcd_week_display(uint8_t week)
 	
 	LCD_Write(lcd_pixel_TT.reg_index, ~(lcd_pixel_TT.bit_map), (lcd_pixel_TT.bit_map));
 
+	LCD_Write(lcd_pixel_T14.reg_index, ~(lcd_pixel_T14.bit_map), ~(lcd_pixel_T14.bit_map));
+	LCD_Write(lcd_pixel_T13.reg_index, ~(lcd_pixel_T13.bit_map), ~(lcd_pixel_T13.bit_map));
+	LCD_Write(lcd_pixel_T12.reg_index, ~(lcd_pixel_T12.bit_map), ~(lcd_pixel_T12.bit_map));
+	LCD_Write(lcd_pixel_T11.reg_index, ~(lcd_pixel_T11.bit_map), ~(lcd_pixel_T11.bit_map));
+	LCD_Write(lcd_pixel_T10.reg_index, ~(lcd_pixel_T10.bit_map), ~(lcd_pixel_T10.bit_map));
+	LCD_Write(lcd_pixel_T9.reg_index, ~(lcd_pixel_T9.bit_map), ~(lcd_pixel_T9.bit_map));
+	LCD_Write(lcd_pixel_T8.reg_index, ~(lcd_pixel_T8.bit_map), ~(lcd_pixel_T8.bit_map));
+
 	switch (week)
 	{
 		case 1:
