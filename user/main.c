@@ -11,7 +11,9 @@
 
 void printf_init(void);
 
-void time_set(void);
+void task_date_time_set(void);
+void task_refresh_date_time(void);
+
 void model_vcc_init(void);
 
 
@@ -59,8 +61,10 @@ int main(void)
 		while (1)
 		{
 
-			time_set();
+			task_date_time_set();
 			aht20_process();
+			task_refresh_date_time();
+
 			
 			/* 
 			if (key_get_event(&key_id, &key_event))
@@ -193,7 +197,7 @@ int fputc(int ch, FILE* f)
 
 
 
-void time_set(void)
+void task_date_time_set(void)
 {
 	static enum {
 		step_init,
@@ -211,6 +215,8 @@ void time_set(void)
 	static uint8_t day = 1;
 	static uint8_t hour = 12;
 	static uint8_t min = 12;
+	static uint8_t sec = 0;
+	static uint8_t week = 0;
 	static uint8_t set_flag = 0;
 	key_id_def key_id;
 	key_event_def key_event;
@@ -237,6 +243,7 @@ void time_set(void)
 		case step_init:
 		{
 			lcd_colon_config(0);
+			RTC_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
 			lcd_time_display((uint8_t)(year/100), (uint8_t)(year%100));
 			lcd_date_display(mon, day);
 			lcd_week_display(RTC_get_weekday_math(year, mon, day));
@@ -456,6 +463,11 @@ void time_set(void)
 		case step_set_final:
 		{
 			RTC_set_date_time(year, mon, day, hour, min, 0);
+
+			lcd_time_display(hour, min);
+			lcd_date_display(mon, day);
+			lcd_week_display(RTC_get_weekday_math(year, mon, day));
+
 			set_flag = 0;
 			break;
 		}
@@ -481,5 +493,38 @@ void model_vcc_init(void)
 	GPIO_InitPeripheral(GPIOA, &gpio_init);
 
 	GPIO_WriteBit(GPIOA, GPIO_PIN_12, Bit_RESET);
+}
+
+
+/* 显示时间日期 */
+void task_refresh_date_time(void)
+{
+	static tick_type tick_date_time = 0;
+	static uint16_t year;
+	static uint8_t mon, day, hour, min, sec, week;
+	static uint8_t mon_old, day_old, hour_old, min_old;
+
+	if ((system_get_tick_cnt_ms() - tick_date_time) >= 1000)
+	{
+		RTC_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
+
+		if ((hour != hour_old) || (min != min_old))
+		{
+			lcd_time_display(hour, min);
+		}
+		
+		if ((mon != mon_old) || (day != day_old))
+		{
+			lcd_date_display(mon, day);
+			lcd_week_display(week);
+		}
+
+		hour_old = hour;
+		min_old = min;
+		mon_old = mon;
+		day_old = day;
+		
+		tick_date_time = system_get_tick_cnt_ms();
+	}
 }
 
