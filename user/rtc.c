@@ -57,6 +57,8 @@ void RTC_PrescalerConfig(void)
 
 void RTC_config(void)
 {
+	RTC_EnableWriteProtection(DISABLE);  
+	
 	/* Enable the PWR clock */
 	RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_PWR, ENABLE);
 	
