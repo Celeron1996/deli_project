@@ -95,7 +95,7 @@ void RTC_config(void)
   PWR_BackupAccessEnable(ENABLE);
 
   /* RTC clock source select */
-  if(SUCCESS==RTC_CLKSourceConfig(RTC_CLK_SRC_TYPE_LSI, true))
+  if(SUCCESS==RTC_CLKSourceConfig(RTC_CLK_SRC_TYPE_LSE, true))
   {
 		RTC_PrescalerConfig();
 		/* Adjust time by values entered by the user on the hyperterminal */
