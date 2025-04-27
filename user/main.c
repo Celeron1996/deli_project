@@ -467,7 +467,7 @@ void task_date_time_set(void)
 			lcd_time_display(hour, min);
 			lcd_date_display(mon, day);
 			lcd_week_display(RTC_get_weekday_math(year, mon, day));
-
+			step = step_init;
 			set_flag = 0;
 			break;
 		}
