@@ -10,7 +10,7 @@ void aht20_delay(uint32_t nCount)
     uint32_t tcnt;
     while(nCount--)
     {
-        tcnt = 32000 / 9;
+        tcnt = 64000 / 9;
         while (tcnt--){;}
     }
 }

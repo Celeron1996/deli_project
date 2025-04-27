@@ -76,7 +76,7 @@ void Delay(uint32_t nCount)
     uint32_t tcnt;
     while(nCount--)
     {
-        tcnt = 32000 / 5;
+        tcnt = 64000 / 5;
         while (tcnt--){;}
     }
 }
@@ -86,7 +86,7 @@ void Delay_us(uint32_t nCount)
     uint32_t tcnt;
     while (nCount--)
     {
-        tcnt = 32 / 5;
+        tcnt = 64 / 5;
         while (tcnt--){;}
     }
 }
