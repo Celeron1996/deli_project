@@ -125,13 +125,6 @@ int i2c_master_send(uint8_t* data, int len, uint8_t slave_addr)
 {
     uint8_t* sendBufferPtr = data;
     
-#ifdef NON_REENTRANT
-    if (Mutex_Flag)
-        return -1;
-    else
-        Mutex_Flag = 1;
-#endif
-    
     I2CTimeout             = I2CT_LONG_TIMEOUT;
     while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
     {
@@ -205,26 +198,12 @@ int i2c_master_send(uint8_t* data, int len, uint8_t slave_addr)
     }
     Comm_Flag = C_READY;
     
-#ifdef NON_REENTRANT
-    if (Mutex_Flag)
-        Mutex_Flag = 0;
-    else
-        return -2;
-#endif
-    
     return 0;
 }
 
 int i2c_master_recv(uint8_t* data, int len, uint8_t slave_addr)
 {
     uint8_t* recvBufferPtr = data;
-    
-#ifdef NON_REENTRANT
-    if (Mutex_Flag)
-        return -1;
-    else
-        Mutex_Flag = 1;
-#endif
     
     I2CTimeout             = I2CT_LONG_TIMEOUT;
     while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
@@ -382,13 +361,6 @@ int i2c_master_recv(uint8_t* data, int len, uint8_t slave_addr)
     }
     Comm_Flag = C_READY;
     
-#ifdef NON_REENTRANT
-    if (Mutex_Flag)
-        Mutex_Flag = 0;
-    else
-        return -2;
-#endif
-
     return 0;
 }
 

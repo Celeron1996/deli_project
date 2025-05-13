@@ -6,8 +6,6 @@
 #include <stdint.h>
 
 
-#define NON_REENTRANT
-
 typedef enum
 {
     FAILED = 0,
