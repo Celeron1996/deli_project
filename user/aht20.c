@@ -19,7 +19,6 @@ void aht20_delay(uint32_t nCount)
 
 void aht20_init(void)
 {
-	i2c_master_init();
 	aht20_delay(200);
 	printf("aht20 init!\r\n");
 	
