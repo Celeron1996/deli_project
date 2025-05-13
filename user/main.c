@@ -30,12 +30,12 @@ int main(void)
 
 	system_tick_init();
 
+	i2c_master_init();
+	
 	lcd_init();
 
-	
 	key_init();
 	
-
 	model_vcc_init();
 	aht20_init();
 
