@@ -8,6 +8,7 @@
 #include "system.h"
 #include "key.h"
 #include "rtc.h"
+#include "myi2c.h"
 
 void printf_init(void);
 
