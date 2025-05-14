@@ -29,7 +29,34 @@ static volatile uint8_t touch_int_flag = 0;
 /* touch gpio init */
 void touch_init(void)
 {
-	touch_gpio_exti_config(1);
+	GPIO_InitType gpio_init;
+	EXTI_InitType exti_init;
+	NVIC_InitType nvic_init;
+
+	/* TOUCH int config */
+	TOUCH_GPIO_CLK_ENABLE();
+	GPIO_InitStruct(&gpio_init);
+	gpio_init.Pin			= TOUCH_GPIO_PIN;
+	gpio_init.GPIO_Pull		= GPIO_Pull_Up;
+	gpio_init.GPIO_Mode		= GPIO_Mode_IT_Falling;
+	GPIO_InitPeripheral(TOUCH_GPIO_PORT, &gpio_init);
+	GPIO_ConfigEXTILine(TOUCH_EXIT_SOURCE_PORT, TOUCH_EXIT_SOURCE_PIN);
+
+	/*Configure TOUCH int EXTI line*/
+	EXTI_InitStruct(&exti_init);
+	exti_init.EXTI_Line    = TOUCH_EXIT_LINE;
+	exti_init.EXTI_Mode    = EXTI_Mode_Interrupt;
+	exti_init.EXTI_Trigger = EXTI_Trigger_Falling;
+	exti_init.EXTI_LineCmd = ENABLE;
+	EXTI_InitPeripheral(&exti_init);
+
+	/*Set TOUCH int interrupt priority*/
+	nvic_init.NVIC_IRQChannel                   = TOUCH_NVIC_IRQ_CHANNEL;
+	nvic_init.NVIC_IRQChannelPreemptionPriority = 0x05;
+	nvic_init.NVIC_IRQChannelSubPriority        = 0x0F;
+	nvic_init.NVIC_IRQChannelCmd                = ENABLE;
+	NVIC_Init(&nvic_init);
+	
 }
 
 
@@ -68,62 +95,16 @@ void task_touch(void)
 }
 
 
-static void touch_gpio_exti_config(uint8_t exti)
+static void touch_gpio_exti_config(FunctionalState cmd)
 {
-	GPIO_InitType gpio_init;
 	EXTI_InitType exti_init;
-	NVIC_InitType nvic_init;
-		
-	if (exti)
-	{
-		/* TOUCH int config */
-		TOUCH_GPIO_CLK_ENABLE();
-		GPIO_InitStruct(&gpio_init);
-		gpio_init.Pin			= TOUCH_GPIO_PIN;
-		gpio_init.GPIO_Pull		= GPIO_Pull_Up;
-		gpio_init.GPIO_Mode		= GPIO_Mode_IT_Falling;
-		GPIO_InitPeripheral(TOUCH_GPIO_PORT, &gpio_init);
-		GPIO_ConfigEXTILine(TOUCH_EXIT_SOURCE_PORT, TOUCH_EXIT_SOURCE_PIN);
 
-		/*Configure TOUCH int EXTI line*/
-		EXTI_InitStruct(&exti_init);
-		exti_init.EXTI_Line    = TOUCH_EXIT_LINE;
-		exti_init.EXTI_Mode    = EXTI_Mode_Interrupt;
-		exti_init.EXTI_Trigger = EXTI_Trigger_Falling;
-		exti_init.EXTI_LineCmd = ENABLE;
-		EXTI_InitPeripheral(&exti_init);
-
-		/*Set TOUCH int interrupt priority*/
-		nvic_init.NVIC_IRQChannel                   = TOUCH_NVIC_IRQ_CHANNEL;
-		nvic_init.NVIC_IRQChannelPreemptionPriority = 0x05;
-		nvic_init.NVIC_IRQChannelSubPriority        = 0x0F;
-		nvic_init.NVIC_IRQChannelCmd                = ENABLE;
-		NVIC_Init(&nvic_init);
-	}
-	else
-	{
-		/* TOUCH int config */
-		TOUCH_GPIO_CLK_ENABLE();
-		GPIO_InitStruct(&gpio_init);
-		gpio_init.Pin			= TOUCH_GPIO_PIN;
-		gpio_init.GPIO_Pull		= GPIO_Pull_Up;
-		gpio_init.GPIO_Mode		= GPIO_Mode_Input;
-		GPIO_InitPeripheral(TOUCH_GPIO_PORT, &gpio_init);
-
-		/*Configure TOUCH int EXTI line*/
-		EXTI_InitStruct(&exti_init);
-		exti_init.EXTI_Line    = TOUCH_EXIT_LINE;
-		exti_init.EXTI_Mode    = EXTI_Mode_Interrupt;
-		exti_init.EXTI_Trigger = EXTI_Trigger_Falling;
-		exti_init.EXTI_LineCmd = DISABLE;
-		EXTI_InitPeripheral(&exti_init);
-
-		/*Set TOUCH int interrupt priority*/
-		nvic_init.NVIC_IRQChannel                   = TOUCH_NVIC_IRQ_CHANNEL;
-		nvic_init.NVIC_IRQChannelPreemptionPriority = 0x05;
-		nvic_init.NVIC_IRQChannelSubPriority        = 0x0F;
-		nvic_init.NVIC_IRQChannelCmd                = DISABLE;
-		NVIC_Init(&nvic_init);
-	}
+	/*Configure TOUCH int EXTI line*/
+	EXTI_InitStruct(&exti_init);
+	exti_init.EXTI_Line    = TOUCH_EXIT_LINE;
+	exti_init.EXTI_Mode    = EXTI_Mode_Interrupt;
+	exti_init.EXTI_Trigger = EXTI_Trigger_Falling;
+	exti_init.EXTI_LineCmd = cmd;
+	EXTI_InitPeripheral(&exti_init);
 }
 
