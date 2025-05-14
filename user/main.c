@@ -9,6 +9,7 @@
 #include "key.h"
 #include "rtc.h"
 #include "myi2c.h"
+#include "backlight.h"
 
 void printf_init(void);
 
@@ -34,6 +35,8 @@ int main(void)
 	i2c_master_init();
 	
 	lcd_init();
+
+	backlight_init();
 
 	key_init();
 	
