@@ -10,6 +10,7 @@
 #include "rtc.h"
 #include "myi2c.h"
 #include "backlight.h"
+#include "touch.h"
 
 void printf_init(void);
 
@@ -37,6 +38,7 @@ int main(void)
 	lcd_init();
 
 	backlight_init();
+	touch_init();
 
 	key_init();
 	
@@ -68,7 +70,7 @@ int main(void)
 			task_date_time_set();
 			aht20_process();
 			task_refresh_date_time();
-
+			task_touch();
 			
 			/* 
 			if (key_get_event(&key_id, &key_event))
