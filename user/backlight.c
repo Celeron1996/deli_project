@@ -16,7 +16,7 @@ void backlight_init(void)
 	gpio_init.GPIO_Mode		= GPIO_Mode_Out_PP;
 	GPIO_InitPeripheral(BACKLIGHT_GPIO_PORT, &gpio_init);
 
-	backlight_ctr(1);
+	backlight_ctr(0);
 }
 
 
