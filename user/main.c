@@ -11,6 +11,7 @@
 #include "myi2c.h"
 #include "backlight.h"
 #include "touch.h"
+#include "gasmodule.h"
 
 void printf_init(void);
 
@@ -22,13 +23,6 @@ void model_vcc_init(void);
 
 int main(void)
 {
-	//printf_init();
-
-	//printf("\n\r init printf! \n\r");
-	
-	
-	//aht20_test();
-	
 	RTC_config();
 
 	system_tick_init();
@@ -44,87 +38,26 @@ int main(void)
 	
 	model_vcc_init();
 	aht20_init();
+	gasmodule_init();
 
-	
-	
-		uint8_t min = 24;
-		uint8_t hour = 11;
-		tick_type delay = 0;
-	
-		lcd_time_display(12, 0);
-		lcd_colon_config(1);
-		lcd_date_display(4, 21);
-		lcd_week_display(1);
-		lcd_temper_humid_display(28, 75);
-		lcd_HCHO_display(234);
-		lcd_battery_config(1);
-		lcd_bluetooth_config(1);
-
-
-		key_id_def key_id;
-		key_event_def key_event;
+	lcd_time_display(12, 0);
+	lcd_colon_config(1);
+	lcd_date_display(4, 21);
+	lcd_week_display(1);
+	lcd_temper_humid_display(28, 75);
+	lcd_HCHO_display(234);
+	lcd_battery_config(1);
+	lcd_bluetooth_config(1);
 		
-		while (1)
-		{
+	while (1)
+	{
 
-			task_date_time_set();
-			aht20_process();
-			task_refresh_date_time();
-			task_touch();
-			
-			/* 
-			if (key_get_event(&key_id, &key_event))
-			{
-				switch (key_id)
-				{
-					case key_up:
-						if (key_event == key_event_press){
-							hour++;
-						}
-						break;
-					case key_down:
-						if (key_event == key_event_press){
-							min++;
-						}
-						break;
-					case key_set:
-						if (key_event == key_event_hold_3s){
-							hour++;
-							min++;
-						}
-						break;
-					default:
-						break;
-				}
-				if (min >= 60){
-					min = 0;
-				}
-				if (hour >= 24){
-					hour = 0;
-				}
-				lcd_time_display(hour, min);
-			}
-			*/
-
-			
-			/*
-			if ((system_get_tick_cnt_ms() - delay) >= 1000)
-			{
-				delay = system_get_tick_cnt_ms();
-				lcd_time_display(hour, min);
-				if (++min >= 60)
-				{
-					if (++hour >= 24)
-					{
-						hour = 0;
-					}
-					min = 0;
-				}
-			}
-			*/
-
-			
-		}
+		task_date_time_set();
+		aht20_process();
+		task_refresh_date_time();
+		task_touch();
+		task_gasmodule();
+	}
 	
 	return 0;
 }
