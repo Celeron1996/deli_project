@@ -18,9 +18,6 @@ void printf_init(void);
 void task_date_time_set(void);
 void task_refresh_date_time(void);
 
-void model_vcc_init(void);
-
-
 int main(void)
 {
 	RTC_config();
@@ -36,7 +33,6 @@ int main(void)
 
 	key_init();
 	
-	model_vcc_init();
 	aht20_init();
 	gasmodule_init();
 
@@ -45,9 +41,8 @@ int main(void)
 	lcd_date_display(4, 21);
 	lcd_week_display(1);
 	lcd_temper_humid_display(28, 75);
-	lcd_HCHO_display(234);
 	lcd_battery_config(1);
-	lcd_bluetooth_config(1);
+	lcd_bluetooth_config(0);
 		
 	while (1)
 	{
@@ -414,25 +409,6 @@ void task_date_time_set(void)
 	}
 }
 
-
-
-
-
-void model_vcc_init(void)
-{
-	GPIO_InitType gpio_init;
-
-
-	RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, ENABLE);
-
-	GPIO_InitStruct(&gpio_init);
-	gpio_init.Pin			= GPIO_PIN_12;
-	gpio_init.GPIO_Pull		= GPIO_No_Pull;
-	gpio_init.GPIO_Mode		= GPIO_Mode_Out_PP;
-	GPIO_InitPeripheral(GPIOA, &gpio_init);
-
-	GPIO_WriteBit(GPIOA, GPIO_PIN_12, Bit_RESET);
-}
 
 
 /* 显示时间日期 */
