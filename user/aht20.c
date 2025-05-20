@@ -110,7 +110,7 @@ void aht20_test(void)
 
 
 
-void aht20_process(void)
+void task_aht20(void)
 {
 	static tick_type aht20_tick = 0;
 	uint8_t send_buffer[3] = {0xAC, 0x33, 0x00};

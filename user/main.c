@@ -53,7 +53,7 @@ int main(void)
 	{
 
 		task_date_time_set();
-		aht20_process();
+		task_aht20();
 		task_refresh_date_time();
 		task_touch();
 		task_gasmodule();
