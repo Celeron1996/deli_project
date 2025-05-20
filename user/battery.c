@@ -16,14 +16,32 @@ static struct {
 void battery_init(void)
 {
 	GPIO_InitType gpio_init;
+	EXTI_InitType exti_init;
+	NVIC_InitType nvic_init;
 
 	/* key_up int config */
 	CHARGE_STATE_GPIO_CLK_ENABLE();
 	GPIO_InitStruct(&gpio_init);
 	gpio_init.Pin			= CHARGE_STATE_GPIO_PIN;
 	gpio_init.GPIO_Pull		= GPIO_Pull_Up;
-	gpio_init.GPIO_Mode		= GPIO_Mode_Input;
+	gpio_init.GPIO_Mode		= GPIO_Mode_IT_Rising_Falling;
 	GPIO_InitPeripheral(CHARGE_STATE_GPIO_PORT, &gpio_init);
+	GPIO_ConfigEXTILine(CHARGE_STATE_EXIT_SOURCE_PORT, CHARGE_STATE_EXIT_SOURCE_PIN);
+
+	/*Configure  int EXTI line*/
+	EXTI_InitStruct(&exti_init);
+	exti_init.EXTI_Line    = CHARGE_STATE_EXIT_LINE;
+	exti_init.EXTI_Mode    = EXTI_Mode_Interrupt;
+	exti_init.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	exti_init.EXTI_LineCmd = ENABLE;
+	EXTI_InitPeripheral(&exti_init);
+
+	/*Set key_up int interrupt priority*/
+	nvic_init.NVIC_IRQChannel                   = CHARGE_STATE_NVIC_IRQ_CHANNEL;
+	nvic_init.NVIC_IRQChannelPreemptionPriority = 0x05;
+	nvic_init.NVIC_IRQChannelSubPriority        = 0x0F;
+	nvic_init.NVIC_IRQChannelCmd                = ENABLE;
+	NVIC_Init(&nvic_init);
 
 	for (uint8_t i = 0; i < 4; i++)
 	{
