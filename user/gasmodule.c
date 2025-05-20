@@ -295,7 +295,7 @@ static void gasmodule_power_enable(uint8_t enable)
 
 /* 每隔十分钟打开一次，每次运行一分钟，因为模块十分耗电60ma，并且需要预热一分钟 */
 #define GASMODULE_SLEEP_TIME			(10*60*1000u)			/* 睡眠时间宏定义，单位ms */
-#define GASMODULE_RUN_TIME				(1*60*1000u)			/* 运行时间宏定义，单位ms */
+#define GASMODULE_RUN_TIME				(2*60*1000u)			/* 运行时间宏定义，单位ms */
 void task_gasmodule(void)
 {
 	static tick_type gas_next_step_time = 0;				/* 到了这个时间后执行下一个步骤 */
