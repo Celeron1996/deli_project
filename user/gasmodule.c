@@ -177,8 +177,7 @@ static void gasmodule_uart_deinit(void)
 
 void GASMODULE_UART_IRQHANDLER(void)
 {
-	if (USART_GetIntStatus(GASMODULE_UART, USART_INT_RXDNE) != RESET && 
-	    USART_GetFlagStatus(GASMODULE_UART, USART_FLAG_RXDNE) != RESET)
+	if (USART_GetIntStatus(GASMODULE_UART, USART_INT_RXDNE) != RESET)
 	{
 	    if ((gas_rx_cnt < sizeof(gas_rx_buffer)) && (!gas_rx_process_flag)){
 	    	gas_rx_buffer[gas_rx_cnt++] = USART_ReceiveData(GASMODULE_UART);
@@ -186,7 +185,18 @@ void GASMODULE_UART_IRQHANDLER(void)
 	    		gas_rx_process_flag = 1;
 	    	}
 	    }
+	    else{
+	    	USART_ReceiveData(GASMODULE_UART);
+	    }
 	}
+
+  if(USART_GetIntStatus(GASMODULE_UART, USART_INT_OREF) != RESET)
+  {
+      /*Read the STS register first,and the read the DAT 
+      register to clear the overflow interrupt*/
+      (void)GASMODULE_UART->STS;
+      (void)GASMODULE_UART->DAT;
+  }
 }
 
 
@@ -292,9 +302,10 @@ void task_gasmodule(void)
 	static tick_type gas_step_run_tick_time = 0;		/* 用于run step的tick计数 */
 	
 	static enum {
+		gas_step_init,
 		gas_step_run,
 		gas_step_sleep
-	} step = gas_step_run;
+	} step = gas_step_init;
 
 	if (!gasmodule_exist_flag){
 		return;
@@ -302,6 +313,12 @@ void task_gasmodule(void)
 
 	switch (step)
 	{
+		case gas_step_init:
+		{
+			gas_next_step_time = system_get_tick_cnt_ms() + GASMODULE_RUN_TIME;
+			step = gas_step_run;
+			break;
+		}
 		case gas_step_run:
 		{
 			if (!gasmodule_power_flag){
