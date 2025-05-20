@@ -13,6 +13,7 @@
 #include "touch.h"
 #include "gasmodule.h"
 #include "myadc.h"
+#include "battery.h"
 
 void printf_init(void);
 
@@ -38,6 +39,7 @@ int main(void)
 	
 	aht20_init();
 	gasmodule_init();
+	battery_init();
 
 	lcd_time_display(12, 0);
 	lcd_colon_config(1);
@@ -55,6 +57,9 @@ int main(void)
 		task_refresh_date_time();
 		task_touch();
 		task_gasmodule();
+		task_battery_charge_flag_refresh();
+		task_battery_voltage_refresh();
+		task_battery_lowpower_refresh();
 	}
 	
 	return 0;
