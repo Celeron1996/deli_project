@@ -69,7 +69,7 @@ void task_battery_charge_flag_refresh(void)
 {
 	static tick_type battery_tick_charge = 0;
 
-	if ((system_get_tick_cnt_ms() - battery_tick_charge) > 3000){
+	if ((system_get_tick_cnt_ms() - battery_tick_charge) > 2000){
 	
 		for (uint8_t i = 0; i < 4; i++)
 		{
