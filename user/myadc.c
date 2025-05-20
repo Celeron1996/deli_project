@@ -69,6 +69,6 @@ uint16_t myadc_get_voltage(uint8_t channel)
     ADC_ClearFlag(ADC,ADC_FLAG_STR);
     dat=ADC_GetDat(ADC);
     
-    return (uint16_t)((dat * 4096) / MYADC_REFERENCE_VCC);
+    return (uint16_t)((dat * MYADC_REFERENCE_VCC) / 4096);
 }
 
