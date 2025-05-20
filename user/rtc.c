@@ -83,6 +83,40 @@ void RTC_PrescalerConfig(void)
     }
 }
 
+#define  USER_WRITE_BKP_DAT1_DATA         0xA5A5
+/**
+ * @brief  Reads data from the specified Data Backup Register.
+ * @param BKP_DAT specifies the Data Backup Register.
+ *   This parameter can be BKP_DATx where x:[1, 20]
+ * @return The content of the specified Data Backup Register
+ */
+static uint32_t BKP_ReadBkpData(uint32_t BKP_DAT)
+{
+    __IO uint32_t tmp = 0;
+    uint32_t value = 0;
+    /* Check the parameters */
+    assert_param(IS_BKP_DAT(BKP_DAT));
+    tmp = (uint32_t)&RTC->BKP1R;
+    tmp += BKP_DAT;
+    value = (*(__IO uint32_t*)tmp);
+    return value;
+}
+
+/**
+ * @brief  Writes user data to the specified Data Backup Register.
+ * @param BKP_DAT specifies the Data Backup Register.
+ *   This parameter can be BKP_DATx where x:[1, 20]
+ * @param Data data to write
+ */
+static void BKP_WriteBkpData(uint32_t BKP_DAT, uint32_t Data)
+{
+    __IO uint32_t tmp = 0;
+    /* Check the parameters */
+    assert_param(IS_BKP_DAT(BKP_DAT));
+    tmp = (uint32_t)&RTC->BKP1R;
+    tmp += BKP_DAT;
+    *(__IO uint32_t*)tmp = Data;
+}
 
 void RTC_config(void)
 {
@@ -94,23 +128,29 @@ void RTC_config(void)
   /* Allow access to RTC */
   PWR_BackupAccessEnable(ENABLE);
 
-  /* RTC clock source select */
-  if(SUCCESS==RTC_CLKSourceConfig(RTC_CLK_SRC_TYPE_LSE, true))
-  {
-		RTC_PrescalerConfig();
-		/* Adjust time by values entered by the user on the hyperterminal */
-		RTC_set_date_time(2025, 4, 26, 0, 0, 0);
-		/* wake up clock select */
-		RTC_ConfigWakeUpClock(RTC_WKUPCLK_CK_SPRE_16BITS);
-		/* wake up timer value */
-		RTC_SetWakeUpCounter(4);
-		printf("\r\n RTC Init Success\r\n");
-  }
-  else
-  {
-      printf("\r\n RTC Init Faile\r\n");
-      while(1);
-  }
+	if (USER_WRITE_BKP_DAT1_DATA != BKP_ReadBkpData(BKP_DAT1) )
+	{
+	  /* RTC clock source select */
+	  if(SUCCESS==RTC_CLKSourceConfig(RTC_CLK_SRC_TYPE_LSE, true))
+	  {
+			RTC_PrescalerConfig();
+			/* Adjust time by values entered by the user on the hyperterminal */
+			RTC_set_date_time(2025, 4, 26, 0, 0, 0);
+			/* wake up clock select */
+			RTC_ConfigWakeUpClock(RTC_WKUPCLK_CK_SPRE_16BITS);
+			/* wake up timer value */
+			RTC_SetWakeUpCounter(4);
+			BKP_WriteBkpData(BKP_DAT1, USER_WRITE_BKP_DAT1_DATA);
+			
+			printf("\r\n RTC Init Success\r\n");
+	  }
+	  else
+	  {
+	      printf("\r\n RTC Init Faile\r\n");
+	      while(1);
+	  }
+	}
+
   RTC_Interrupt_Config(ENABLE);
 }
 
