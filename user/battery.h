@@ -1,0 +1,37 @@
+#ifndef BATTERY_H
+#define BATTERY_H
+
+
+
+#include "n32l40x.h"
+#include "stdint.h"
+#include "system.h"
+#include "myadc.h"
+#include "delay.h"
+#include "lcd.h"
+
+
+/* gpio define : key_up int enable */
+#define CHARGE_STATE_GPIO_PORT			GPIOD
+#define CHARGE_STATE_GPIO_PIN				GPIO_PIN_2
+#define CHARGE_STATE_GPIO_CLK_ENABLE()	do{RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOD, ENABLE);}while(0)
+#define CHARGE_STATE_GPIO_CLK_DISABLE()	do{RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOD, DISABLE);}while(0)
+
+#define BATTERY_READ_GPIO_IS_CHARGING()			((GPIO_ReadInputDataBit(CHARGE_STATE_GPIO_PORT, CHARGE_STATE_GPIO_PIN) == Bit_RESET)?(1):(0))
+
+
+#define BATTERY_VOLTAGE_ADC_CHANNEL		MYADC_CHAN0
+
+#define BATTERY_VOLTAGE_LOWPOWER			(3500u)
+
+
+void battery_init(void);
+void task_battery_charge_flag_refresh(void);
+void task_battery_voltage_refresh(void);
+uint8_t battery_is_charging(void);
+void task_battery_lowpower_refresh(void);
+
+
+
+#endif
+
