@@ -12,6 +12,7 @@
 #include "backlight.h"
 #include "touch.h"
 #include "gasmodule.h"
+#include "myadc.h"
 
 void printf_init(void);
 
@@ -20,11 +21,13 @@ void task_refresh_date_time(void);
 
 int main(void)
 {
-	RTC_config();
-
 	system_tick_init();
 
+	RTC_config();
+
 	i2c_master_init();
+
+	myadc_init();
 	
 	lcd_init();
 
