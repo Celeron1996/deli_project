@@ -85,7 +85,15 @@ void task_battery_charge_flag_refresh(void)
 			delay_ms(5);
 		}
 
-		lcd_battery_config(battery.charge_flag);
+		if (battery.charge_flag){
+			lcd_battery_config(1);
+		}
+		else{
+			if (!battery.lowpower_flag){
+				lcd_battery_config(0);
+			}
+		}
+		
 
 		battery_tick_charge = system_get_tick_cnt_ms();
 	}
@@ -116,17 +124,27 @@ void task_battery_voltage_refresh(void)
 		}
 		battery.voltage = vol_sum/4 ;
 
-		if (battery.voltage < BATTERY_VOLTAGE_LOWPOWER){
-			battery.lowpower_cnt++;
-			if (battery.lowpower_cnt >= 5){
-			
-				battery.lowpower_flag = 1;
-				battery.lowpower_cnt = 0;
+		if (battery.voltage <= BATTERY_VOLTAGE_LOWPOWER){
+			if (!battery.lowpower_flag){
+				battery.lowpower_cnt++;
+				if (battery.lowpower_cnt >= 5){
+					battery.lowpower_flag = 1;
+					battery.lowpower_cnt = 0;
+				}
 			}
 		}
 		else{
-			battery.lowpower_cnt = 0;
-			battery.lowpower_flag = 0;
+			if (battery.lowpower_flag){		/* 已经处于低电量报警下退出要多判断几次 */
+				battery.lowpower_cnt++;
+				if (battery.lowpower_cnt >= 5){
+					battery.lowpower_flag = 0;
+					battery.lowpower_cnt = 0;
+				}
+			}
+			else{
+				battery.lowpower_cnt = 0;
+			}
+			
 		}
 		battery_tick_voltage = system_get_tick_cnt_ms();
 		
