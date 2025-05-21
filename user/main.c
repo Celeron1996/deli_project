@@ -17,7 +17,7 @@
 
 void printf_init(void);
 
-void task_date_time_set(void);
+uint8_t task_date_time_set(void);
 void task_refresh_date_time(void);
 
 int main(void)
@@ -52,9 +52,10 @@ int main(void)
 	while (1)
 	{
 
-		task_date_time_set();
+		if (!task_date_time_set()){
+			task_refresh_date_time();
+		}
 		task_aht20();
-		task_refresh_date_time();
 		task_touch();
 		task_gasmodule();
 		task_battery_charge_flag_refresh();
@@ -139,7 +140,7 @@ int fputc(int ch, FILE* f)
 
 
 
-void task_date_time_set(void)
+uint8_t task_date_time_set(void)
 {
 	static enum {
 		step_init,
@@ -168,12 +169,12 @@ void task_date_time_set(void)
 	{
 		if (!key_get_event(&key_id, &key_event))
 		{
-			return ;
+			return set_flag;
 		}
 
 		if (!((key_id == key_set) && (key_event == key_event_hold_3s)))
 		{
-			return ;
+			return set_flag;
 		}
 
 		set_flag = 1;
@@ -415,6 +416,8 @@ void task_date_time_set(void)
 		}
 		default:break;
 	}
+
+	return set_flag;
 }
 
 
