@@ -57,6 +57,9 @@ typedef enum
 int i2c_master_init(void);
 int i2c_master_send(uint8_t* data, int len, uint8_t slave_addr);
 int i2c_master_recv(uint8_t* data, int len, uint8_t slave_addr);
+int i2c_master_read_reg(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data, uint8_t data_len);
+int i2c_master_write_reg(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data, uint8_t data_len);
+
 
 
 #endif

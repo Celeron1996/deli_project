@@ -121,6 +121,311 @@ int i2c_master_init(void)
     return 0;
 }
 
+
+int i2c_master_read_reg(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data, uint8_t data_len)
+{
+    uint8_t* recvBufferPtr = data;
+
+    I2CTimeout             = I2CT_LONG_TIMEOUT;
+    while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
+    {
+        if ((I2CTimeout--) == 0)
+        {
+					CommTimeOut_CallBack(MASTER_BUSY);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+
+    if (Comm_Flag == C_READY)
+    {
+        Comm_Flag = C_START_BIT;
+        I2C_GenerateStart(I2C1, ENABLE);
+    }
+    
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_MODE_FLAG)) // EV5
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_MODE);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+
+    I2C_SendAddr7bit(I2C1, slave_addr, I2C_DIRECTION_SEND);
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_TXMODE_FLAG)) // EV6
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_TXMODE);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+    
+		// send reg addr
+    I2C_SendData(I2C1, reg_addr);
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_DATA_SENDING)) // EV8
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_SENDING);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+
+    Comm_Flag = C_READY;
+
+
+    I2CTimeout             = I2CT_LONG_TIMEOUT;
+    while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_BUSY);
+        }
+    }
+    I2C_ConfigAck(I2C1, ENABLE);
+
+    // send start
+    if (Comm_Flag == C_READY)
+    {
+        Comm_Flag = C_START_BIT;
+        I2C_GenerateStart(I2C1, ENABLE);
+    }
+    
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_MODE_FLAG)) // EV5
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_MODE);
+        }
+    }
+
+    // send addr
+    I2C_SendAddr7bit(I2C1, slave_addr, I2C_DIRECTION_RECV);
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_RXMODE_FLAG)) // EV6
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_RXMODE);
+        }
+    }
+    Comm_Flag = C_READY;
+
+    // recv data
+    if (data_len == 1)
+    {
+        I2C_ConfigAck(I2C1, DISABLE);
+        (void)(I2C1->STS1); /// clear ADDR
+        (void)(I2C1->STS2);
+        if (Comm_Flag == C_READY)
+        {
+            Comm_Flag = C_STOP_BIT;
+            I2C_GenerateStop(I2C1, ENABLE);
+        }
+        
+        I2CTimeout = I2CT_LONG_TIMEOUT;
+        while (!I2C_GetFlag(I2Cx, I2C_FLAG_RXDATNE))
+        {
+            if ((I2CTimeout--) == 0)
+            {
+                CommTimeOut_CallBack(MASTER_RECVD);
+            }
+        }
+        *recvBufferPtr++ = I2C_RecvData(I2C1);
+        data_len--;
+    }
+    else if (data_len == 2)
+    {
+        I2C1->CTRL1 |= 0x0800; /// set ACKPOS
+        (void)(I2C1->STS1);
+        (void)(I2C1->STS2);
+        I2C_ConfigAck(I2C1, DISABLE);
+        
+        I2CTimeout = I2CT_LONG_TIMEOUT;
+        while (!I2C_GetFlag(I2C1, I2C_FLAG_BYTEF))
+        {
+            if ((I2CTimeout--) == 0)
+            {
+                CommTimeOut_CallBack(MASTER_BYTEF);
+            }
+        }
+        
+        if (Comm_Flag == C_READY)
+        {
+            Comm_Flag = C_STOP_BIT;
+            I2C_GenerateStop(I2C1, ENABLE);
+        }
+        
+        *recvBufferPtr++ = I2C_RecvData(I2C1);
+        data_len--;
+        *recvBufferPtr++ = I2C_RecvData(I2C1);
+        data_len--;
+    }
+    else
+    {
+        I2C_ConfigAck(I2C1, ENABLE);
+        (void)(I2C1->STS1);
+        (void)(I2C1->STS2);
+        
+        while (data_len)
+        {
+            if (data_len == 3)
+            {
+                I2CTimeout = I2CT_LONG_TIMEOUT;
+                while (!I2C_GetFlag(I2C1, I2C_FLAG_BYTEF))
+                {
+                    if ((I2CTimeout--) == 0)
+                    {
+                        CommTimeOut_CallBack(MASTER_BYTEF);
+                    }
+                }
+                I2C_ConfigAck(I2C1, DISABLE);
+                *recvBufferPtr++ = I2C_RecvData(I2C1);
+                data_len--;
+                
+                I2CTimeout = I2CT_LONG_TIMEOUT;
+                while (!I2C_GetFlag(I2C1, I2C_FLAG_BYTEF))
+                {
+                    if ((I2CTimeout--) == 0)
+                    {
+                        CommTimeOut_CallBack(MASTER_BYTEF);
+                    }
+                }
+                
+                if (Comm_Flag == C_READY)
+                {
+                    Comm_Flag = C_STOP_BIT;
+                    I2C_GenerateStop(I2C1, ENABLE);
+                }
+        
+                *recvBufferPtr++ = I2C_RecvData(I2C1);
+                data_len--;
+                *recvBufferPtr++ = I2C_RecvData(I2C1);
+                data_len--;
+                
+                break;
+            }
+            
+            I2CTimeout = I2CT_LONG_TIMEOUT;
+            while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_DATA_RECVD_FLAG)) // EV7
+            {
+                if ((I2CTimeout--) == 0)
+                {
+                    CommTimeOut_CallBack(MASTER_RECVD);
+                }
+            }
+            *recvBufferPtr++ = I2C_RecvData(I2C1);
+            data_len--;
+        }
+    }
+    
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_BUSY);
+        }
+    }
+    Comm_Flag = C_READY;
+    
+    return 0;
+}
+
+
+int i2c_master_write_reg(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data, uint8_t data_len)
+{
+    uint8_t* sendBufferPtr = data;
+    
+    I2CTimeout             = I2CT_LONG_TIMEOUT;
+    while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
+    {
+        if ((I2CTimeout--) == 0)
+        {
+					CommTimeOut_CallBack(MASTER_BUSY);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+
+    if (Comm_Flag == C_READY)
+    {
+        Comm_Flag = C_START_BIT;
+        I2C_GenerateStart(I2C1, ENABLE);
+    }
+    
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_MODE_FLAG)) // EV5
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_MODE);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+
+    I2C_SendAddr7bit(I2C1, slave_addr, I2C_DIRECTION_SEND);
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_TXMODE_FLAG)) // EV6
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_TXMODE);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+    
+		// send reg addr
+    I2C_SendData(I2C1, reg_addr);
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_DATA_SENDING)) // EV8
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_SENDING);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+
+    Comm_Flag = C_READY;
+
+    // send data
+    while (data_len-- > 0)
+    {
+        I2C_SendData(I2C1, *sendBufferPtr++);
+        I2CTimeout = I2CT_LONG_TIMEOUT;
+        while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_DATA_SENDING)) // EV8
+        {
+            if ((I2CTimeout--) == 0)
+            {
+                CommTimeOut_CallBack(MASTER_SENDING);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+            }
+        }
+    }
+
+    I2CTimeout = I2CT_LONG_TIMEOUT;
+    while (!I2C_CheckEvent(I2C1, I2C_EVT_MASTER_DATA_SENDED)) // EV8-2
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_SENDED);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+    
+    if (Comm_Flag == C_READY)
+    {
+        Comm_Flag = C_STOP_BIT;
+        I2C_GenerateStop(I2C1, ENABLE);
+    }
+    
+    while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
+    {
+        if ((I2CTimeout--) == 0)
+        {
+            CommTimeOut_CallBack(MASTER_BUSY);printf("error:%s, %d!\r\n", __FUNCTION__, __LINE__);
+        }
+    }
+    Comm_Flag = C_READY;
+    
+    return 0;
+}
+
 int i2c_master_send(uint8_t* data, int len, uint8_t slave_addr)
 {
     uint8_t* sendBufferPtr = data;
