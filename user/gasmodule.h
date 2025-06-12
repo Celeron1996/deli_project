@@ -16,8 +16,8 @@
 
 
 
-#define gasmodule_on()	do{GPIO_WriteBit(GASMODULE_GPIO_PORT, GASMODULE_GPIO_PIN, Bit_SET);}while(0)
-#define gasmodule_off()	do{GPIO_WriteBit(GASMODULE_GPIO_PORT, GASMODULE_GPIO_PIN, Bit_RESET);}while(0)
+#define gasmodule_on()	do{GPIO_WriteBit(GASMODULE_GPIO_PORT, GASMODULE_GPIO_PIN, Bit_RESET);}while(0)
+#define gasmodule_off()	do{GPIO_WriteBit(GASMODULE_GPIO_PORT, GASMODULE_GPIO_PIN, Bit_SET);}while(0)
 #define gasmodule_ctr(cmd)	do{\
 if (cmd){gasmodule_on();}\
 else{gasmodule_off();}\

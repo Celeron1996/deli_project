@@ -14,8 +14,8 @@
 
 
 
-#define backlight_on()	do{GPIO_WriteBit(BACKLIGHT_GPIO_PORT, BACKLIGHT_GPIO_PIN, Bit_SET);}while(0)
-#define backlight_off()	do{GPIO_WriteBit(BACKLIGHT_GPIO_PORT, BACKLIGHT_GPIO_PIN, Bit_RESET);}while(0)
+#define backlight_on()	do{GPIO_WriteBit(BACKLIGHT_GPIO_PORT, BACKLIGHT_GPIO_PIN, Bit_RESET);}while(0)
+#define backlight_off()	do{GPIO_WriteBit(BACKLIGHT_GPIO_PORT, BACKLIGHT_GPIO_PIN, Bit_SET);}while(0)
 #define backlight_ctr(cmd)	do{\
 if (cmd){backlight_on();}\
 else{backlight_off();}\
