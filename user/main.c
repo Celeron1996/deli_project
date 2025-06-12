@@ -14,12 +14,22 @@
 #include "gasmodule.h"
 #include "myadc.h"
 #include "battery.h"
+#include "sd8568.h"
+
+
+
+#define RTC_TYPE_MCU				0
+#define RTC_TYPE_SD8568			1
+#define RTC_TYPE						(RTC_TYPE_SD8568)
 
 void printf_init(void);
 
 uint8_t task_date_time_set(void);
 void task_refresh_date_time(void);
 void task_colon_flicker(void);
+
+void my_get_date_time(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *week, uint8_t *hour, uint8_t *min, uint8_t *sec);
+void my_set_date_time(uint16_t year, uint8_t mon, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
 
 
 int main(void)
@@ -41,6 +51,7 @@ int main(void)
 	
 	aht20_init();
 	gasmodule_init();
+	gasmodule_on();
 	battery_init();
 
 	lcd_time_display(12, 0);
@@ -50,7 +61,7 @@ int main(void)
 	lcd_temper_humid_display(28, 75);
 	lcd_battery_config(1);
 	lcd_bluetooth_config(0);
-		
+	
 	while (1)
 	{
 
@@ -189,7 +200,7 @@ uint8_t task_date_time_set(void)
 		case step_init:
 		{
 			lcd_colon_config(0);
-			RTC_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
+			my_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
 			lcd_time_display((uint8_t)(year/100), (uint8_t)(year%100));
 			lcd_date_display(mon, day);
 			lcd_week_display(RTC_get_weekday_math(year, mon, day));
@@ -408,7 +419,7 @@ uint8_t task_date_time_set(void)
 		}
 		case step_set_final:
 		{
-			RTC_set_date_time(year, mon, day, hour, min, 0);
+			my_set_date_time(year, mon, day, hour, min, 0);
 
 			lcd_time_display(hour, min);
 			lcd_date_display(mon, day);
@@ -435,7 +446,7 @@ void task_refresh_date_time(void)
 
 	if ((system_get_tick_cnt_ms() - tick_date_time) >= 1000)
 	{
-		RTC_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
+		my_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
 
 		if ((hour != hour_old) || (min != min_old))
 		{
@@ -476,5 +487,65 @@ void task_colon_flicker(void)
 		}
 		tick_colon_flicker = system_get_tick_cnt_ms();
 	}
+}
+
+
+void my_get_date_time(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *week, uint8_t *hour, uint8_t *min, uint8_t *sec)
+{
+	#if (RTC_TYPE == RTC_TYPE_MCU)
+	RTC_get_date_time(year, mon, day, week, hour, min, sec);
+	#elif	(RTC_TYPE == RTC_TYPE_SD8568)
+	
+	sd8568_time_t time;
+
+	if (sd8568_read_time(&time) == SD8568_EXIT_OK)
+	{
+		*year = time.year + 2000;
+		*mon = time.month;
+		*day = time.day;
+		*week = time.week;
+		if (*week == 0){
+			*week = 7;			/* sd8568 的星期天等于0 */
+		}
+		*hour = time.hour;
+		*min = time.minute;
+		*sec = time.second;
+	}
+	else
+	{
+		*year = 2025;
+		*mon = 6;
+		*day = 13;
+		*week = 5;
+		*hour = 6;
+		*min = 0;
+		*sec = 0;
+	}
+	#endif
+}
+
+
+void my_set_date_time(uint16_t year, uint8_t mon, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
+{
+	#if (RTC_TYPE == RTC_TYPE_MCU)
+	RTC_set_date_time(year, mon, day, hour, min, sec);
+	#elif	(RTC_TYPE == RTC_TYPE_SD8568)
+
+	sd8568_time_t time;
+
+	time.year = year - 2000;
+	time.month = mon;
+	time.day = day;
+	time.hour = hour;
+	time.minute = min;
+	time.second = sec;
+	time.week = RTC_get_weekday_math(year, mon, day);
+	if (time.week == 7){
+		time.week = 0;	/* sd8568 的星期天等于0 */
+	}
+
+	sd8568_write_time(&time);
+	
+	#endif
 }
 
