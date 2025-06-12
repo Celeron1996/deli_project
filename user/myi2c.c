@@ -173,15 +173,6 @@ int i2c_master_read_reg(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data, uin
 
     Comm_Flag = C_READY;
 
-
-    I2CTimeout             = I2CT_LONG_TIMEOUT;
-    while (I2C_GetFlag(I2C1, I2C_FLAG_BUSY))
-    {
-        if ((I2CTimeout--) == 0)
-        {
-            CommTimeOut_CallBack(MASTER_BUSY);
-        }
-    }
     I2C_ConfigAck(I2C1, ENABLE);
 
     // send start
