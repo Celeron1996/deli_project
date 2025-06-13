@@ -139,7 +139,7 @@ void RTC_config(void)
 			/* wake up clock select */
 			RTC_ConfigWakeUpClock(RTC_WKUPCLK_CK_SPRE_16BITS);
 			/* wake up timer value */
-			RTC_SetWakeUpCounter(4);
+			RTC_SetWakeUpCounter(0);
 			BKP_WriteBkpData(BKP_DAT1, USER_WRITE_BKP_DAT1_DATA);
 			
 			printf("\r\n RTC Init Success\r\n");
