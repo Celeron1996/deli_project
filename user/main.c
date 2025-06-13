@@ -51,7 +51,6 @@ int main(void)
 	
 	aht20_init();
 	gasmodule_init();
-	gasmodule_on();
 	battery_init();
 
 	lcd_time_display(12, 0);
