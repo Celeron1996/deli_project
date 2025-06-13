@@ -688,7 +688,7 @@ static void lcd_gpio_init(void)
 
 static void lcd_bsp_init(void)
 {
-	LCD_ClockConfig(LCD_CLK_SRC_LSI);
+	LCD_ClockConfig(LCD_CLK_SRC_LSE);
 	
 	lcd_gpio_init();
 }
