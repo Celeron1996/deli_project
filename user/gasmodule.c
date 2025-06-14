@@ -337,6 +337,8 @@ void task_gasmodule(void)
 				step = gas_step_sleep;
 				gas_next_step_time = system_get_tick_cnt_ms() + GASMODULE_SLEEP_TIME;
 			}
+
+			sleep_counter_reload();
 			break;
 		}
 		case gas_step_sleep:

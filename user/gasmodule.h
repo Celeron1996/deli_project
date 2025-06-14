@@ -7,7 +7,7 @@
 #include "system.h"
 #include "delay.h"
 #include "lcd.h"
-
+#include "sleep.h"
 
 #define GASMODULE_GPIO_PORT			GPIOA
 #define GASMODULE_GPIO_PIN				GPIO_PIN_12
