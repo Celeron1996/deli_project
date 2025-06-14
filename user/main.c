@@ -34,8 +34,6 @@ void my_set_date_time(uint16_t year, uint8_t mon, uint8_t day, uint8_t hour, uin
 
 int main(void)
 {
-	system_tick_init();
-
 	RTC_config();
 
 	i2c_master_init();
