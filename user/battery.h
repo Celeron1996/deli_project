@@ -9,7 +9,7 @@
 #include "myadc.h"
 #include "delay.h"
 #include "lcd.h"
-
+#include "sleep.h"
 
 /* gpio define : key_up int enable */
 #define CHARGE_STATE_GPIO_PORT			GPIOD

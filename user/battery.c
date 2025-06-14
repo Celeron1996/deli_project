@@ -72,7 +72,36 @@ void task_battery_charge_flag_refresh(void)
 {
 	static tick_type battery_tick_charge = 0;
 
-	if ((system_get_tick_cnt_ms() - battery_tick_charge) > 2000){
+	if ((battery.charge_flag) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 1000)){
+
+		for (uint8_t i = 0; i < 4; i++)
+		{
+			if (BATTERY_READ_GPIO_IS_CHARGING()){
+			
+				battery.charge_flag = 1;
+			}
+			else{
+				battery.charge_flag = 0;
+				
+				break;
+			}
+			delay_ms(2);
+		}
+
+		if (battery.charge_flag){
+			lcd_battery_config(1);
+			sleep_counter_reload();
+		}
+		else{
+			if (!battery.lowpower_flag){
+				lcd_battery_config(0);
+			}
+		}
+
+		battery_tick_charge = system_get_tick_cnt_ms();
+		
+	}
+	else if ((system_tick_timer_is_run()) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 1000)){
 	
 		for (uint8_t i = 0; i < 4; i++)
 		{
@@ -90,14 +119,9 @@ void task_battery_charge_flag_refresh(void)
 
 		if (battery.charge_flag){
 			lcd_battery_config(1);
-		}
-		else{
-			if (!battery.lowpower_flag){
-				lcd_battery_config(0);
-			}
+			sleep_counter_reload();
 		}
 		
-
 		battery_tick_charge = system_get_tick_cnt_ms();
 	}
 }
