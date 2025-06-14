@@ -39,8 +39,6 @@ int main(void)
 	RTC_config();
 
 	i2c_master_init();
-
-	myadc_init();
 	
 	lcd_init();
 

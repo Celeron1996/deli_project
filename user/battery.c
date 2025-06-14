@@ -57,9 +57,12 @@ void battery_init(void)
 
 	lcd_battery_config(battery.charge_flag);
 
+	myadc_init();
+	delay_ms(10);
 	battery.voltage = myadc_get_voltage(BATTERY_VOLTAGE_ADC_CHANNEL) * 2;
 	battery.lowpower_cnt = 0;
 	battery.lowpower_flag = 0;
+	myadc_deinit();
 }
 
 
