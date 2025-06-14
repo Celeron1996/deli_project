@@ -92,7 +92,7 @@ void key_up_irq_call(void)
 		EXTI_ClrITPendBit(KEY_UP_EXIT_LINE);
 
 		/* MY CODE BEGIN */
-		key_int_flag += KEY_MAX_NUM;
+		key_int_flag = (uint8_t)(~(0xFF << KEY_MAX_NUM));	/* 标志着每个按键都要过一遍scan */
 
 		sleep_counter_reload();		/* 外部中断后应该保持运行一段时间 */
 	}
@@ -106,7 +106,7 @@ void key_down_irq_call(void)
 		EXTI_ClrITPendBit(KEY_DOWN_EXIT_LINE);
 
 		/* MY CODE BEGIN */
-		key_int_flag += KEY_MAX_NUM;
+		key_int_flag = (uint8_t)(~(0xFF << KEY_MAX_NUM));	/* 标志着每个按键都要过一遍scan */
 
 		sleep_counter_reload();		/* 外部中断后应该保持运行一段时间 */
 	}
@@ -182,9 +182,8 @@ void key_scanner(void)
 						key_handler[i].status = key_status_release;
 						key_handler[i].hold_cnt = 0;
 						key_event_call(i, key_event_release);
-						
-						if (key_int_flag){key_int_flag--;}
 					}
+					key_int_flag &= (~(0x01 << i));
 					break;
 				}
 				case 0:
