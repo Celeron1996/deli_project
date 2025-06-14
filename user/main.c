@@ -15,7 +15,7 @@
 #include "myadc.h"
 #include "battery.h"
 #include "sd8568.h"
-
+#include "sleep.h"
 
 
 #define RTC_TYPE_MCU				0
@@ -74,6 +74,9 @@ int main(void)
 		task_battery_charge_flag_refresh();
 		task_battery_voltage_refresh();
 		task_battery_lowpower_refresh();
+
+
+		task_sleep();
 	}
 	
 	return 0;
