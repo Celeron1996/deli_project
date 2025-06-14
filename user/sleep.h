@@ -1,5 +1,5 @@
 #ifndef SLEEP_H
-#define SLEEP_h
+#define SLEEP_H
 
 
 
@@ -22,6 +22,9 @@
 
 extern volatile uint8_t wakeup_source_mask;
 extern tick_type sleep_counter_ms;
+
+
+void task_sleep(void);
 
 
 #endif
