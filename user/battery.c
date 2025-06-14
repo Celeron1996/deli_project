@@ -139,7 +139,7 @@ void task_battery_voltage_refresh(void)
 		run_period = 1000;
 	}
 	else{
-		run_period = 1000;
+		run_period = BATTERY_VOLTAGE_ADC_GET_PERIOD_MS;
 	}
 
 	if ((system_get_tick_cnt_ms() - battery_tick_voltage) > run_period){
