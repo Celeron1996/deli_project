@@ -3,7 +3,7 @@
 static void key_gpio_init(void);
 static void key_event_call(key_id_def id, key_event_def event);
 
-static volatile uint8_t key_int_flag = 0;
+static volatile uint8_t key_scan_flag = 0;
 
 static struct key_str key_handler[KEY_MAX_NUM];
 
@@ -92,7 +92,7 @@ void key_up_irq_call(void)
 		EXTI_ClrITPendBit(KEY_UP_EXIT_LINE);
 
 		/* MY CODE BEGIN */
-		key_int_flag = (uint8_t)(~(0xFF << KEY_MAX_NUM));	/* 标志着每个按键都要过一遍scan */
+		key_scan_flag = (uint8_t)(~(0xFF << KEY_MAX_NUM));	/* 标志着每个按键都要过一遍scan */
 
 		sleep_counter_reload();		/* 外部中断后应该保持运行一段时间 */
 	}
@@ -106,7 +106,7 @@ void key_down_irq_call(void)
 		EXTI_ClrITPendBit(KEY_DOWN_EXIT_LINE);
 
 		/* MY CODE BEGIN */
-		key_int_flag = (uint8_t)(~(0xFF << KEY_MAX_NUM));	/* 标志着每个按键都要过一遍scan */
+		key_scan_flag = (uint8_t)(~(0xFF << KEY_MAX_NUM));	/* 标志着每个按键都要过一遍scan */
 
 		sleep_counter_reload();		/* 外部中断后应该保持运行一段时间 */
 	}
@@ -121,11 +121,11 @@ void key_scanner(void)
 	uint8_t pin_state_key_down;
 	uint8_t i;
 
-	if ((key_int_flag) && (!system_tick_timer_is_run())){
+	if ((key_scan_flag) && (!system_tick_timer_is_run())){
 		system_tick_init();
 	}
 
-	if (((system_get_tick_cnt_ms() - key_tick) >= KEY_SCAN_PERIOD_MS) && (key_int_flag))
+	if (((system_get_tick_cnt_ms() - key_tick) >= KEY_SCAN_PERIOD_MS) && (key_scan_flag))
 	{
 		pin_state_key_up = GPIO_ReadInputDataBit(KEY_UP_GPIO_PORT, KEY_UP_GPIO_PIN);
 		pin_state_key_down = GPIO_ReadInputDataBit(KEY_DOWN_GPIO_PORT, KEY_DOWN_GPIO_PIN);
@@ -183,7 +183,7 @@ void key_scanner(void)
 						key_handler[i].hold_cnt = 0;
 						key_event_call(i, key_event_release);
 					}
-					key_int_flag &= (~(0x01 << i));
+					key_scan_flag &= (~(0x01 << i));
 					break;
 				}
 				case 0:
@@ -222,7 +222,7 @@ void key_scanner(void)
 			}
 		}
 
-		if ((i >= KEY_MAX_NUM) && (key_int_flag == 0)){
+		if ((i >= KEY_MAX_NUM) && (key_scan_flag == 0)){
 			system_tick_deinit();
 		}
 		else{
