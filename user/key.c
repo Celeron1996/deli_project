@@ -93,6 +93,8 @@ void key_up_irq_call(void)
 
 		/* MY CODE BEGIN */
 		key_int_flag += KEY_MAX_NUM;
+
+		sleep_counter_reload();		/* 外部中断后应该保持运行一段时间 */
 	}
 }
 
@@ -105,6 +107,8 @@ void key_down_irq_call(void)
 
 		/* MY CODE BEGIN */
 		key_int_flag += KEY_MAX_NUM;
+
+		sleep_counter_reload();		/* 外部中断后应该保持运行一段时间 */
 	}
 }
 
@@ -116,6 +120,10 @@ void key_scanner(void)
 	uint8_t pin_state_key_up;
 	uint8_t pin_state_key_down;
 	uint8_t i;
+
+	if ((key_int_flag) && (!system_tick_timer_is_run())){
+		system_tick_init();
+	}
 
 	if (((system_get_tick_cnt_ms() - key_tick) >= KEY_SCAN_PERIOD_MS) && (key_int_flag))
 	{
@@ -205,6 +213,22 @@ void key_scanner(void)
 		}
 		
 		key_tick = system_get_tick_cnt_ms();
+	}
+
+	if (system_tick_timer_is_run()){
+
+		for (i = 0; i < KEY_MAX_NUM; i++){
+			if (key_handler[i].status != key_event_release){
+				break;
+			}
+		}
+
+		if ((i >= KEY_MAX_NUM) && (key_int_flag == 0)){
+			system_tick_deinit();
+		}
+		else{
+			sleep_counter_reload();
+		}
 	}
 }
 

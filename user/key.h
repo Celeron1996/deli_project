@@ -5,7 +5,7 @@
 #include "n32l40x.h"
 #include "stdint.h"
 #include "system.h"
-
+#include "sleep.h"
 
 /* gpio define : key_up int enable */
 #define KEY_UP_GPIO_PORT			GPIOB
