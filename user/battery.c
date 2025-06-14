@@ -101,8 +101,9 @@ void task_battery_charge_flag_refresh(void)
 		battery_tick_charge = system_get_tick_cnt_ms();
 		
 	}
-	else if ((system_tick_timer_is_run()) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 1000)){
-	
+	else if ((system_get_exti_trigger_flag(EXTI_LINE2)) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 1000)){
+
+		system_clear_exti_trigger_flag(EXTI_LINE2);
 		for (uint8_t i = 0; i < 4; i++)
 		{
 			if (BATTERY_READ_GPIO_IS_CHARGING()){
