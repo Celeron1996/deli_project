@@ -137,9 +137,9 @@ void RTC_config(void)
 			/* Adjust time by values entered by the user on the hyperterminal */
 			RTC_set_date_time(2025, 4, 26, 0, 0, 0);
 			/* wake up clock select */
-			RTC_ConfigWakeUpClock(RTC_WKUPCLK_CK_SPRE_16BITS);
+			RTC_ConfigWakeUpClock(RTC_WKUPCLK_RTCCLK_DIV16);
 			/* wake up timer value */
-			RTC_SetWakeUpCounter(0);
+			RTC_SetWakeUpCounter(1024-1);
 			BKP_WriteBkpData(BKP_DAT1, USER_WRITE_BKP_DAT1_DATA);
 			
 			printf("\r\n RTC Init Success\r\n");
