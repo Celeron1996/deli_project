@@ -174,6 +174,7 @@ void EXTI1_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
 	exti2_irqhandler_call();
+	system_set_exti_trigger_flag(EXTI_LINE2);
 }
 
 void EXTI3_IRQHandler(void)
