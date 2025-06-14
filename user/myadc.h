@@ -14,6 +14,7 @@
 
 void myadc_init(void);
 uint16_t myadc_get_voltage(uint8_t channel);
+void myadc_deinit(void);
 
 
 

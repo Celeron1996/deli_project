@@ -4,6 +4,7 @@
 
 
 static void myadc_chan1_gpio_init(void);
+static void myadc_chan1_gpio_deinit(void);
 
 
 
@@ -41,6 +42,13 @@ void myadc_init(void)
 
 }
 
+void myadc_deinit(void)
+{
+	ADC_Enable(ADC, DISABLE);
+	ADC_DeInit(ADC);
+	myadc_chan1_gpio_deinit();
+}
+
 
 
 static void myadc_chan1_gpio_init(void)
@@ -53,6 +61,21 @@ static void myadc_chan1_gpio_init(void)
   GPIO_InitStruct(&GPIO_InitStructure);
   GPIO_InitStructure.Pin       = GPIO_PIN_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Analog;
+  GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
+}
+
+
+static void myadc_chan1_gpio_deinit(void)
+{
+  GPIO_InitType GPIO_InitStructure;
+  
+	/* Enable GPIOC clocks */
+	RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, ENABLE);
+
+  GPIO_InitStruct(&GPIO_InitStructure);
+  GPIO_InitStructure.Pin       = GPIO_PIN_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Input;
+  GPIO_InitStructure.GPIO_Pull = GPIO_No_Pull;
   GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
 }
 
