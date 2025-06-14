@@ -474,7 +474,7 @@ void task_colon_flicker(void)
 	static tick_type tick_colon_flicker = 0;
 	static uint8_t flick_flag = 0;
 
-	if ((system_get_tick_cnt_ms() - tick_colon_flicker) > 1000)
+	if ((system_get_tick_cnt_ms() - tick_colon_flicker) >= 1000)
 	{
 		lcd_colon_config(flick_flag);
 		
