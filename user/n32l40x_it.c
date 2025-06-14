@@ -215,6 +215,10 @@ void RTC_WKUP_IRQHandler(void)
     if (RTC_GetITStatus(RTC_INT_WUT) != RESET)
     {
        RTC_ClrIntPendingBit(RTC_INT_WUT);
+
+       if (!system_tick_timer_is_run()){
+       	system_add_tick_cnt_ms(1000);
+       }
     }
 }
 
