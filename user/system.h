@@ -12,6 +12,9 @@
 #define system_get_tick_cnt_ms()				system_tick_counter_ms
 #define system_add_tick_cnt_ms(x)		do{system_tick_counter_ms += (x);}while(0)
 
+extern uint8_t system_tick_timer_run_flag;
+#define system_tick_timer_is_run()		system_tick_timer_run_flag
+
 extern volatile tick_type system_tick_counter_ms;
 
 
