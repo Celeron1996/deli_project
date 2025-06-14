@@ -56,6 +56,8 @@ int main(void)
 	lcd_temper_humid_display(28, 75);
 	lcd_battery_config(1);
 	lcd_bluetooth_config(0);
+
+	system_add_tick_cnt_ms(20*60*1000);	/* 让一些任务快速运行 */
 	
 	while (1)
 	{
@@ -192,7 +194,8 @@ uint8_t task_date_time_set(void)
 		set_flag = 1;
 	}
 
-
+	sleep_counter_reload();
+	
 	switch (step)
 	{
 		case step_init:
@@ -441,8 +444,9 @@ void task_refresh_date_time(void)
 	static uint16_t year;
 	static uint8_t mon, day, hour, min, sec, week;
 	static uint8_t mon_old, day_old, hour_old, min_old;
+	static tick_type task_refresh_date_time_period = 1000;
 
-	if ((system_get_tick_cnt_ms() - tick_date_time) >= 1000)
+	if ((system_get_tick_cnt_ms() - tick_date_time) >= task_refresh_date_time_period)
 	{
 		my_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
 
@@ -461,6 +465,9 @@ void task_refresh_date_time(void)
 		min_old = min;
 		mon_old = mon;
 		day_old = day;
+
+		/* 计算好下次更新时间 */
+		task_refresh_date_time_period = (60 - sec + 1) * 1000;
 		
 		tick_date_time = system_get_tick_cnt_ms();
 	}
