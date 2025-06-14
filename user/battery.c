@@ -100,11 +100,11 @@ void task_battery_charge_flag_refresh(void)
 }
 
 
-
+#define BATTERY_VOLTAGE_ADC_GET_PERIOD_MS	(2*60*1000)		/* 什么时候读一次电池电压，单位毫秒 */
 void task_battery_voltage_refresh(void)
 {
 	static tick_type battery_tick_voltage = 0;
-	static tick_type run_period = 3000;
+	static tick_type run_period = BATTERY_VOLTAGE_ADC_GET_PERIOD_MS;
 	uint16_t vol_sum = 0;
 
 
@@ -117,6 +117,8 @@ void task_battery_voltage_refresh(void)
 
 	if ((system_get_tick_cnt_ms() - battery_tick_voltage) > run_period){
 
+		myadc_init();
+		
 		for (uint8_t i = 0; i < 4; i++)
 		{
 			vol_sum += (myadc_get_voltage(BATTERY_VOLTAGE_ADC_CHANNEL) * 2);
@@ -146,6 +148,9 @@ void task_battery_voltage_refresh(void)
 			}
 			
 		}
+
+		myadc_deinit();
+
 		battery_tick_voltage = system_get_tick_cnt_ms();
 		
 	}
