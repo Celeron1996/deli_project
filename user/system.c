@@ -7,6 +7,9 @@ volatile tick_type system_tick_counter_ms = 0;
 /* tick timer 运行标志 */
 uint8_t system_tick_timer_run_flag = 0;
 
+/* 外部线中断标志位 */
+volatile uint32_t exti_trigger_mask = 0;
+
 /* 使用基本定时器6进行tick计数，需要产生5ms中断的tick
 	 APB1_PERIPH 过来给到定时器的频率最大16MHZ
 	 根据数据手册，APB1 的分频系数不为1时，给到TIM6时频率是两倍
