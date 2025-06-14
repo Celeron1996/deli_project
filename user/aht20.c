@@ -121,7 +121,7 @@ void task_aht20(void)
 	uint16_t u16_RH;
 	uint16_t u16_tempa;
 
-	if ((system_get_tick_cnt_ms() - aht20_tick) > 1000)
+	if ((system_get_tick_cnt_ms() - aht20_tick) > (20*1000))
 	{
 		i2c_master_send(send_buffer, 3, AHT20_SLAVE_ADDR_7BIT);
 
