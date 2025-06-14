@@ -149,7 +149,7 @@ void task_battery_voltage_refresh(void)
 		for (uint8_t i = 0; i < 4; i++)
 		{
 			vol_sum += (myadc_get_voltage(BATTERY_VOLTAGE_ADC_CHANNEL) * 2);
-			delay_ms(2);
+			delay_ms(1);
 		}
 		battery.voltage = vol_sum/4 ;
 
