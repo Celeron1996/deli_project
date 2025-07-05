@@ -177,7 +177,7 @@ void key_scanner(void)
 			{
 				case KEY_TRIGGER_MASK:	//release
 				{
-					if (key_handler[i].status != key_event_release)
+					if (key_handler[i].status != key_status_release)
 					{
 						key_handler[i].status = key_status_release;
 						key_handler[i].hold_cnt = 0;
@@ -217,7 +217,7 @@ void key_scanner(void)
 	if (system_tick_timer_is_run()){
 
 		for (i = 0; i < KEY_MAX_NUM; i++){
-			if (key_handler[i].status != key_event_release){
+			if (key_handler[i].status != key_status_release){
 				break;
 			}
 		}
