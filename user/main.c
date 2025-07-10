@@ -68,7 +68,7 @@ int main(void)
 		}
 		task_aht20();
 		task_touch();
-		task_gasmodule();
+		//task_gasmodule();
 		task_battery_charge_flag_refresh();
 		task_battery_voltage_refresh();
 		task_battery_lowpower_refresh();
