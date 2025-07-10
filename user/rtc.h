@@ -8,6 +8,9 @@
 
 #define    RTC_LSE_TRY_COUNT              250
 
+#define RTC_WAKEUP_PERIOD_MS		(1000)		// RTC 唤醒周期
+
+
 
 typedef enum {
     RTC_CLK_SRC_TYPE_HSE_DIV32=0x01,

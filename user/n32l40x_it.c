@@ -34,7 +34,7 @@
  */
 #include "n32l40x_it.h"
 #include "system.h"
-
+#include "rtc.h"
 
 
 
@@ -218,7 +218,7 @@ void RTC_WKUP_IRQHandler(void)
        RTC_ClrIntPendingBit(RTC_INT_WUT);
 
        if (!system_tick_timer_is_run()){
-       	system_add_tick_cnt_ms(1000);
+       	system_add_tick_cnt_ms(RTC_WAKEUP_PERIOD_MS);
        }
     }
 }
