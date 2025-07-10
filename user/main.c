@@ -45,7 +45,7 @@ int main(void)
 
 	key_init();
 	
-	//aht20_init();
+	aht20_init();
 	gasmodule_init();
 	battery_init();
 
@@ -61,22 +61,20 @@ int main(void)
 	
 	while (1)
 	{
-		/*
+
 		if (!task_date_time_set()){
-			//task_refresh_date_time();
+			task_refresh_date_time();
 			task_colon_flicker();
 		}
-		//task_aht20();
+		task_aht20();
 		task_touch();
-		//task_gasmodule();
+		task_gasmodule();
 		task_battery_charge_flag_refresh();
 		task_battery_voltage_refresh();
 		task_battery_lowpower_refresh();
-		
 
-		task_sleep();*/
-		
-		PWR_EnterSTOP2Mode(PWR_STOPENTRY_WFI,PWR_CTRL3_RAM1RET|PWR_CTRL3_RAM2RET);
+
+		task_sleep();
 	}
 	
 	return 0;
