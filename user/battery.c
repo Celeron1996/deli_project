@@ -72,7 +72,7 @@ void task_battery_charge_flag_refresh(void)
 {
 	static tick_type battery_tick_charge = 0;
 
-	if ((battery.charge_flag) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 1000)){
+	if ((battery.charge_flag) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 2000)){
 
 		for (uint8_t i = 0; i < 4; i++)
 		{
@@ -101,7 +101,7 @@ void task_battery_charge_flag_refresh(void)
 		battery_tick_charge = system_get_tick_cnt_ms();
 		
 	}
-	else if ((system_get_exti_trigger_flag(EXTI_LINE2)) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 1000)){
+	else if ((system_get_exti_trigger_flag(EXTI_LINE2)) && ((system_get_tick_cnt_ms() - battery_tick_charge) >= 2000)){
 
 		system_clear_exti_trigger_flag(EXTI_LINE2);
 		for (uint8_t i = 0; i < 4; i++)
