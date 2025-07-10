@@ -8,7 +8,7 @@
 
 #define    RTC_LSE_TRY_COUNT              250
 
-#define RTC_WAKEUP_PERIOD_MS		(1000)		// RTC 唤醒周期
+#define RTC_WAKEUP_PERIOD_MS		(2000)		// RTC 唤醒周期
 
 
 
