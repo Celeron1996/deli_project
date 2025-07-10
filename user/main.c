@@ -350,7 +350,7 @@ uint8_t task_date_time_set(void)
 				}
 				else if ((key_id == key_down)&&(key_event == key_event_press))
 				{
-					if (hour > 1){hour--;}
+					if (hour > 0){hour--;}
 					lcd_time_display(hour, min);
 				}
 				else if ((key_id == key_set)&&(key_event == key_event_press))
@@ -391,7 +391,7 @@ uint8_t task_date_time_set(void)
 				}
 				else if ((key_id == key_down)&&(key_event == key_event_press))
 				{
-					if (min > 1){min--;}
+					if (min > 0){min--;}
 					lcd_time_display(hour, min);
 				}
 				else if ((key_id == key_set)&&(key_event == key_event_press))
