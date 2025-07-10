@@ -16,7 +16,7 @@
 #include "battery.h"
 #include "sd8568.h"
 #include "sleep.h"
-
+#include "iwdg.h"
 
 #define RTC_TYPE_MCU				0
 #define RTC_TYPE_SD8568			1
@@ -34,6 +34,8 @@ void my_set_date_time(uint16_t year, uint8_t mon, uint8_t day, uint8_t hour, uin
 
 int main(void)
 {
+	iwdg_init();
+	
 	RTC_config();
 
 	i2c_master_init();
@@ -73,7 +75,8 @@ int main(void)
 		task_battery_voltage_refresh();
 		task_battery_lowpower_refresh();
 
-
+		IWDG_RELOAD();
+		
 		task_sleep();
 	}
 	
