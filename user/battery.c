@@ -193,7 +193,7 @@ void task_battery_lowpower_refresh(void)
 
 	if (!battery.charge_flag)
 	{
-		if ((system_get_tick_cnt_ms() - battery_lowpower_tick) > 1000)
+		if ((system_get_tick_cnt_ms() - battery_lowpower_tick) > 2000)
 		{
 			if (battery.lowpower_flag)
 			{
