@@ -26,7 +26,6 @@ void printf_init(void);
 
 uint8_t task_date_time_set(void);
 void task_refresh_date_time(void);
-void task_colon_flicker(void);
 
 void my_get_date_time(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *week, uint8_t *hour, uint8_t *min, uint8_t *sec);
 void my_set_date_time(uint16_t year, uint8_t mon, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
@@ -66,7 +65,6 @@ int main(void)
 
 		if (!task_date_time_set()){
 			task_refresh_date_time();
-			task_colon_flicker();
 		}
 		task_touch();
 		//task_gasmodule();
@@ -470,6 +468,9 @@ void task_refresh_date_time(void)
 	static uint8_t mon, day, hour, min, sec, week;
 	static uint8_t mon_old, day_old, hour_old, min_old;
 	static tick_type task_refresh_date_time_period = 1000;
+	
+	static tick_type tick_colon_flicker = 0;
+	static uint8_t flick_flag = 0;
 
 	if ((system_get_tick_cnt_ms() - tick_date_time) >= task_refresh_date_time_period)
 	{
@@ -499,15 +500,8 @@ void task_refresh_date_time(void)
 		
 		tick_date_time = system_get_tick_cnt_ms();
 	}
-}
 
-
-
-void task_colon_flicker(void)
-{
-	static tick_type tick_colon_flicker = 0;
-	static uint8_t flick_flag = 0;
-
+	/* 冒号闪烁 */
 	if ((system_get_tick_cnt_ms() - tick_colon_flicker) >= 2000)
 	{
 		lcd_colon_config(flick_flag);
