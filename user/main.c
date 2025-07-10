@@ -68,7 +68,6 @@ int main(void)
 			task_refresh_date_time();
 			task_colon_flicker();
 		}
-		task_aht20();
 		task_touch();
 		//task_gasmodule();
 		task_battery_charge_flag_refresh();
@@ -491,6 +490,9 @@ void task_refresh_date_time(void)
 		min_old = min;
 		mon_old = mon;
 		day_old = day;
+
+		/* 顺便更新温湿度 */
+		task_aht20();
 
 		/* 计算好下次更新时间 */
 		task_refresh_date_time_period = (60 - sec + 1) * 1000;
