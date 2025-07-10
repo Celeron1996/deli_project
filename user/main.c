@@ -179,9 +179,9 @@ uint8_t task_date_time_set(void)
 	static uint8_t min = 12;
 	static uint8_t sec = 0;
 	static uint8_t week = 0;
-	
 	key_id_def key_id;
 	key_event_def key_event;
+	static tick_type timeout_tick = 0;
 
 
 	if (!set_flag)
@@ -210,6 +210,7 @@ uint8_t task_date_time_set(void)
 			lcd_time_display((uint8_t)(year/100), (uint8_t)(year%100));
 			lcd_date_display(mon, day);
 			lcd_week_display(RTC_get_weekday_math(year, mon, day));
+			timeout_tick = system_get_tick_cnt_ms();
 			step = step_set_year_l;
 			break;
 		}
@@ -217,6 +218,7 @@ uint8_t task_date_time_set(void)
 		{
 			if (key_get_event(&key_id, &key_event))
 			{
+				timeout_tick = system_get_tick_cnt_ms();
 				if ((key_id == key_up)&&(key_event == key_event_press))
 				{
 					if (year < 2099){year++;}
@@ -236,6 +238,7 @@ uint8_t task_date_time_set(void)
 					break;
 				}
 				lcd_week_display(RTC_get_weekday_math(year, mon, day));
+				
 			}
 			else
 			{
@@ -259,6 +262,7 @@ uint8_t task_date_time_set(void)
 		{
 			if (key_get_event(&key_id, &key_event))
 			{
+				timeout_tick = system_get_tick_cnt_ms();
 				if ((key_id == key_up)&&(key_event == key_event_press))
 				{
 					if (mon < 12){mon++;}
@@ -301,6 +305,7 @@ uint8_t task_date_time_set(void)
 		{
 			if (key_get_event(&key_id, &key_event))
 			{
+				timeout_tick = system_get_tick_cnt_ms();
 				if ((key_id == key_up)&&(key_event == key_event_press))
 				{
 					if (day < 31){day++;}
@@ -345,6 +350,7 @@ uint8_t task_date_time_set(void)
 		{
 			if (key_get_event(&key_id, &key_event))
 			{
+				timeout_tick = system_get_tick_cnt_ms();
 				if ((key_id == key_up)&&(key_event == key_event_press))
 				{
 					if (hour < 23){hour++;}
@@ -386,6 +392,7 @@ uint8_t task_date_time_set(void)
 		{
 			if (key_get_event(&key_id, &key_event))
 			{
+				timeout_tick = system_get_tick_cnt_ms();
 				if ((key_id == key_up)&&(key_event == key_event_press))
 				{
 					if (min < 59){min++;}
@@ -435,6 +442,20 @@ uint8_t task_date_time_set(void)
 			break;
 		}
 		default:break;
+	}
+
+
+	if ((system_get_tick_cnt_ms() - timeout_tick) >= 60*1000)
+	{
+		// time out
+		my_get_date_time(&year, &mon, &day, &week, &hour, &min, &sec);
+		lcd_time_display(hour, min);
+		lcd_date_display(mon, day);
+		lcd_week_display(RTC_get_weekday_math(year, mon, day));
+		step = step_init;
+		set_flag = 0;
+
+		key_get_event(&key_id, &key_event);	// disable system tick tim
 	}
 
 	return set_flag;
