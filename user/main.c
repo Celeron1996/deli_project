@@ -153,9 +153,11 @@ int fputc(int ch, FILE* f)
 
 
 
-
-
-
+static uint8_t set_flag = 0;
+uint8_t get_date_set_flag(void)
+{
+	return set_flag;
+}
 
 uint8_t task_date_time_set(void)
 {
@@ -177,7 +179,7 @@ uint8_t task_date_time_set(void)
 	static uint8_t min = 12;
 	static uint8_t sec = 0;
 	static uint8_t week = 0;
-	static uint8_t set_flag = 0;
+	
 	key_id_def key_id;
 	key_event_def key_event;
 

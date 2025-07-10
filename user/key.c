@@ -112,7 +112,7 @@ void key_down_irq_call(void)
 	}
 }
 
-
+extern uint8_t get_date_set_flag(void);
 /* 按键扫描 */
 void key_scanner(void)
 {
@@ -222,7 +222,7 @@ void key_scanner(void)
 			}
 		}
 
-		if ((i >= KEY_MAX_NUM) && (key_scan_flag == 0)){
+		if ((i >= KEY_MAX_NUM) && (key_scan_flag == 0) && (!get_date_set_flag())){
 			system_tick_deinit();
 		}
 		else{
