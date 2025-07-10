@@ -67,23 +67,23 @@ static void myadc_chan1_gpio_init(void)
 
 static void myadc_chan1_gpio_deinit(void)
 {
-  GPIO_InitType GPIO_InitStructure;
-  
-	/* Enable GPIOC clocks */
+	GPIO_InitType GPIO_InitStructure;
+
 	RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, ENABLE);
 
-  GPIO_InitStruct(&GPIO_InitStructure);
-  GPIO_InitStructure.Pin       = GPIO_PIN_0;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Input;
-  GPIO_InitStructure.GPIO_Pull = GPIO_No_Pull;
-  GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
+	GPIO_InitStruct(&GPIO_InitStructure);
+	GPIO_InitStructure.Pin		 = GPIO_PIN_0;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pull = GPIO_No_Pull;
+	GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
+	GPIO_ResetBits(GPIOA, GPIO_PIN_0);
 }
 
 
 uint16_t myadc_get_voltage(uint8_t channel)
 {
     uint16_t dat;
-    ADC_ConfigRegularChannel(ADC, channel, 1, ADC_SAMP_TIME_55CYCLES5);
+    ADC_ConfigRegularChannel(ADC, channel, 1, ADC_SAMP_TIME_239CYCLES5);
     /* Start ADC Software Conversion */
     ADC_EnableSoftwareStartConv(ADC,ENABLE);
     while(ADC_GetFlagStatus(ADC,ADC_FLAG_ENDC)==0){
