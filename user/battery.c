@@ -19,7 +19,7 @@ void battery_init(void)
 	EXTI_InitType exti_init;
 	NVIC_InitType nvic_init;
 
-	/* key_up int config */
+	/* chaging state int config */
 	CHARGE_STATE_GPIO_CLK_ENABLE();
 	GPIO_InitStruct(&gpio_init);
 	gpio_init.Pin			= CHARGE_STATE_GPIO_PIN;
@@ -28,7 +28,7 @@ void battery_init(void)
 	GPIO_InitPeripheral(CHARGE_STATE_GPIO_PORT, &gpio_init);
 	GPIO_ConfigEXTILine(CHARGE_STATE_EXIT_SOURCE_PORT, CHARGE_STATE_EXIT_SOURCE_PIN);
 
-	/*Configure  int EXTI line*/
+	/* chaging state Configure  int EXTI line*/
 	EXTI_InitStruct(&exti_init);
 	exti_init.EXTI_Line    = CHARGE_STATE_EXIT_LINE;
 	exti_init.EXTI_Mode    = EXTI_Mode_Interrupt;
@@ -36,7 +36,7 @@ void battery_init(void)
 	exti_init.EXTI_LineCmd = ENABLE;
 	EXTI_InitPeripheral(&exti_init);
 
-	/*Set key_up int interrupt priority*/
+	/*Set chaging state int interrupt priority*/
 	nvic_init.NVIC_IRQChannel                   = CHARGE_STATE_NVIC_IRQ_CHANNEL;
 	nvic_init.NVIC_IRQChannelPreemptionPriority = 0x05;
 	nvic_init.NVIC_IRQChannelSubPriority        = 0x0F;
