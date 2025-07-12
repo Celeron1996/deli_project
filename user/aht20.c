@@ -125,7 +125,7 @@ void task_aht20(void)
 	{
 		i2c_master_send(send_buffer, 3, AHT20_SLAVE_ADDR_7BIT);
 
-		aht20_delay(120);
+		aht20_delay(84);
 
 		i2c_master_recv(read_buffer, 7, AHT20_SLAVE_ADDR_7BIT);
 
